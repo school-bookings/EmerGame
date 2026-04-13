@@ -1,0 +1,1829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+<title>EMERGENCE[Y]: THE GAME</title>
+
+<script>
+const UI_TEXT = {
+  pageTitle:         'EMERGENCE[Y]: THE GAME',
+  landingEyebrow:    ' · 2030–2090 · ',
+  landingTitleMain:  'EMERGENCE[Y]',
+  landingTitleSub:   'THE GAME',
+  landingTagline:    'You\'re in charge of society over sixty years. How will you shape humanity?',
+  landingPlayButton: '▶ \u00a0PLAY',
+  pathEyebrow:       'Choose Your Focus Area',
+  pathHeading:       'How will you tackle<br>the world\'s big problems?',
+  pathSubtitle:      'Pick a path.',
+  gameWordmark:      'EMERGENCE[Y]',
+  gameYearLabel:     'Current Year',
+  roundFormat:       'Round {round} / {total}',
+  eventTagFormat:    '▸ Event {round} of {total} · {path}',
+  optionLetterFormat: 'Option {letter}',
+  chooseLabel:       'What do you do?',
+  sidebarLabel:      'Key Markers',
+  statLabels: {
+    economy:     'The Economy',
+    healthcare:  'Healthcare',
+    education:   'Education',
+    social:      'Social Justice',
+    environment: 'Environment',
+  },
+  endEarlyButton:    '⏹ \u00a0End Game Early',
+  impactForecastLabel: 'likely effects (? = unknown until you choose)',
+  overlayTag:        'What happens next',
+  overlayContinueBtn: 'NEXT EVENT →',
+  overlayIncreasing: '↑ INCREASING',
+  overlayDecreasing: '↓ DECREASING',
+  overlayNoChange:   '— NO CHANGE',
+  hiddenEffectTag:   'hidden effect revealed',
+  otherEffectsLabel: '— other effects —',
+  endEyebrow:        'Simulation Complete',
+  endTitle:          'YOUR RESULTS',
+  endLocationYear:   '{location} · {year}',
+  endLocation:       'Victoria',
+  verdictEyebrow:    'What happened to Victoria?',
+  playAgainButton:   '↺ \u00a0PLAY AGAIN',
+  verdicts: {
+    gildedWasteland: {
+      title:     'The Gilded Wasteland',
+      narrative: 'The economy is booming — jobs are up, businesses are thriving, and the numbers look great on paper. But the environment paid the price. Rivers are struggling, forests have shrunk, and the natural systems that keep everything else running have taken a serious hit. Future generations will inherit a wealthy society with a damaged planet.',
+    },
+    beautifulStruggle: {
+      title:     'The Beautiful Struggle',
+      narrative: 'The ecosystems are recovering — wetlands are back, wildlife is returning, and the state is taking climate action seriously. But the economy is in trouble. Jobs are scarce, cost of living is high, and a lot of people are doing it tough. Protecting the planet was the right call. Now comes the hard part: figuring out how to pay for it.',
+    },
+    fracturedCommons: {
+      title:     'The Fractured Commons',
+      narrative: 'Real progress has been made on equality and justice — laws are fairer, opportunities are more spread out, and communities feel more included. But the health system is struggling badly. Hospitals are under pressure, waiting lists are long, and the people who most need care often can\'t get it. A fairer society still needs to keep its people healthy.',
+    },
+    educatedDivide: {
+      title:     'The Educated Divide',
+      narrative: 'Schools and universities are genuinely excellent — students are learning, skills are growing, and education outcomes are strong. But the gap between wealthy and disadvantaged communities has gotten wider, not smaller. A great education system is only great if everyone can actually benefit from it.',
+    },
+    weightOfConsequence: {
+      title:     'The Weight of Consequence',
+      narrative: 'The decisions were hard, and too many of them didn\'t land well. Across the board — the economy, health, education, the environment, and social equality — things are in a worse place than when you started. This isn\'t the end of the story. Communities are resilient and change is always possible. But it starts with being honest about what went wrong.',
+    },
+    stateTransformed: {
+      title:     'A State Transformed',
+      narrative: 'Across five major crises, almost every front came out ahead. The economy is strong, people are healthier, education is better, the environment is in reasonable shape, and communities are more equal than before. These things don\'t happen by accident — they\'re the result of making genuinely difficult decisions and sticking with them.',
+    },
+    prosperityAtAPrice: {
+      title:     'Prosperity at a Price',
+      narrative: 'Overall, things are in a pretty good place. People are doing better, services have improved, and the economy is holding up. But the environment got left behind. Nature doesn\'t send invoices — but it will eventually. The full cost of what was lost here hasn\'t shown up yet.',
+    },
+    richInEverything: {
+      title:     'Rich in Everything But Money',
+      narrative: 'A genuinely caring, connected community has emerged. People look out for each other, social support systems are strong, and equality has improved. The problem is the budget. The economy isn\'t generating enough to sustain all of this long-term. Good values need funding to survive — that\'s the next challenge.',
+    },
+    longMiddleGround: {
+      title:     'The Long Middle Ground',
+      narrative: 'No disasters, but no breakthroughs either. Sixty years of tough decisions produced a mixed record — some things got better, some got worse, most stayed roughly the same. Sometimes that\'s what governing looks like. The question for the next generation is whether "good enough" is actually good enough.',
+    },
+  },
+};
+</script>
+
+<script>
+const ALL_STORY_PATHS = {
+
+// ================================================================
+// PATH 1 — ENVIRONMENT
+// ================================================================
+  environment: {
+    PATH_TITLE:    'Environmental Crisis',
+    PATH_SUBTITLE: 'Roots & Renewal',
+    PATH_COLOUR:   'var(--colour-environment)',
+    PATH_CARD_ICON:   '🌿',
+    PATH_CARD_NAME:   'Environmental<br>Crisis',
+    PATH_CARD_FLAVOR: 'Face climate disasters head-on — from bushfires and droughts to mass extinction. Every decision shapes the planet your children inherit.',
+
+    EVENTS: [
+      {
+        EVENT_TITLE:   'Bushfires',
+        DEFAULT_INTRO: 'A major bushfire has burned through towns in regional Victoria. Seventy percent of nearby forest has been destroyed, wildlife has been displaced, and property damage is estimated at over $500 million.',
+        OPTIONS: [
+          {
+            OPTION_NAME:        'Work with Indigenous Land Experts to Prevent Future Bushfires',
+            OPTION_DESCRIPTION: 'Partner with Indigenous knowledge holders to use traditional land management practices, such as cultural burning, to reduce future bushfire risks.',
+            NARRATIVE_TITLE:    'Breaking News: Cultural Fire Practices Spread Across Australia',
+            NARRATIVE:          'Over the next two decades, traditional land management helps reduce some bushfire risks and improves ecosystem health. However, long dry periods continue to worsen across many regions, and water supplies begin to fall dangerously low.',
+            STAT_EFFECTS: { economy: -4, healthcare: -6, education: 8, social: 12, environment: 10 },
+            CONSEQUENCE_INTRO:  'Traditional fire management helped the forests — but long dry periods are worsening across many regions, and water supplies have begun to fall dangerously low.'
+          },
+          {
+            OPTION_NAME:        'Invest in Firefighting Technology',
+            OPTION_DESCRIPTION: 'Use advanced fire detection systems, drones, and AI tools to predict and fight bushfires earlier.',
+            NARRATIVE_TITLE:    'Breaking News: High-Tech Fire Systems Transform Disaster Response',
+            NARRATIVE:          'New AI detection systems and firefighting drones help control bushfires faster than ever before. But rising temperatures and repeated fires begin to strain water supplies across the country.',
+            STAT_EFFECTS: { economy: 3, healthcare: 6, education: 4, social: -4, environment: -6 },
+            CONSEQUENCE_INTRO:  'High-tech firefighting helped control the blazes — but rising temperatures and repeated fires have begun straining water supplies across the country.'
+          },
+          {
+            OPTION_NAME:        'Rebuild Fire-Resistant Communities',
+            OPTION_DESCRIPTION: 'Rebuild homes and infrastructure quickly using fire-resistant materials and improved town planning.',
+            NARRATIVE_TITLE:    'Breaking News: Bushfire Recovery Sparks Major Regional Rebuilding',
+            NARRATIVE:          'Towns rebuild quickly with stronger infrastructure and fire-resistant designs. As communities grow again, long-term drought begins to place increasing pressure on water resources.',
+            STAT_EFFECTS: { economy: 12, healthcare: 6, education: -3, social: 5, environment: -5 },
+            CONSEQUENCE_INTRO:  'Communities rebuilt stronger than before — but as they grow again, long-term drought has begun placing increasing pressure on water resources.'
+          }
+        ]
+      },
+
+      {
+        EVENT_TITLE:   'Water Scarcity',
+        DEFAULT_INTRO: 'Long droughts, fires, and pollution cause major water shortages around the world. Cities struggle to supply drinking water, and countries begin competing for access to water.',
+        OPTIONS: [
+          {
+            OPTION_NAME:        'Build Desalination Plants',
+            OPTION_DESCRIPTION: 'Turn seawater into drinking water using large coastal desalination facilities.',
+            NARRATIVE_TITLE:    'Breaking News: Massive Desalination Network Expands Coastal Cities',
+            NARRATIVE:          'New desalination plants help supply water to many communities. However, agriculture still struggles with dry conditions, pushing scientists to develop crops that can survive with far less water.',
+            STAT_EFFECTS: { economy: 10, healthcare: 6, education: 3, social: -4, environment: -10 },
+            CONSEQUENCE_INTRO:  'Desalination plants helped coastal communities — but agriculture still struggles. Scientists are now developing crops that survive with far less water.'
+          },
+          {
+            OPTION_NAME:        'Strict Water Rationing',
+            OPTION_DESCRIPTION: 'Governments introduce strict limits on how much water people, farms, and businesses can use.',
+            NARRATIVE_TITLE:    'Breaking News: Water Restrictions Reshape Daily Life',
+            NARRATIVE:          'Strict limits on water use change how cities, farms, and industries operate. To keep food production stable, scientists begin searching for crops that can grow with far less water.',
+            STAT_EFFECTS: { economy: -10, healthcare: 5, education: 2, social: -6, environment: 8 },
+            CONSEQUENCE_INTRO:  'Rationing changed daily life across the country. To keep food production stable, scientists are now searching for crops that can grow with far less water.'
+          },
+          {
+            OPTION_NAME:        'Water Recycling Technology',
+            OPTION_DESCRIPTION: 'Invest in technology that cleans and reuses wastewater for farming, industry, and drinking.',
+            NARRATIVE_TITLE:    'Breaking News: Breakthroughs in Water Recycling Transform Cities',
+            NARRATIVE:          'Advanced recycling systems allow water to be reused many times. Even with these improvements, farmers still face extreme drought conditions, increasing demand for drought-resistant crops.',
+            STAT_EFFECTS: { economy: 8, healthcare: 6, education: -2, social: 5, environment: -4 },
+            CONSEQUENCE_INTRO:  'Recycling technology helped cities — but farmers still face extreme drought conditions, and demand for drought-resistant crops is rising fast.'
+          }
+        ]
+      },
+
+      {
+        EVENT_TITLE:   'Drought Resilient Crops',
+        DEFAULT_INTRO: 'Scientists create genetically modified crops that can grow with 50% less water. These crops could transform farming in dry regions.',
+        OPTIONS: [
+          {
+            OPTION_NAME:        'Support Farmers to Switch Crops',
+            OPTION_DESCRIPTION: 'Governments fund training and financial support to help farmers adopt drought-resistant crops.',
+            NARRATIVE_TITLE:    'Breaking News: New Climate Crops Spread Across Farms',
+            NARRATIVE:          'Farmers begin adopting drought-resistant crops, helping stabilise food production in dry regions. However, many wild ecosystems continue to struggle, and scientists warn that numerous species are nearing extinction.',
+            STAT_EFFECTS: { economy: 10, healthcare: -2, education: 10, social: 8, environment: -4 },
+            CONSEQUENCE_INTRO:  'New crops stabilised food production — but wild ecosystems continue to struggle, and scientists warn that numerous species are nearing extinction.'
+          },
+          {
+            OPTION_NAME:        'Open-Source the Technology',
+            OPTION_DESCRIPTION: 'Make the crop technology free for everyone to use and improve.',
+            NARRATIVE_TITLE:    'Breaking News: Global Access to Climate Crops Accelerates Innovation',
+            NARRATIVE:          'Countries around the world begin using and improving drought-resistant crops. Despite these advances in agriculture, biodiversity loss continues to grow across many ecosystems.',
+            STAT_EFFECTS: { economy: -6, healthcare: 4, education: 10, social: 12, environment: -3 },
+            CONSEQUENCE_INTRO:  'Open-source crops spread across the globe — but biodiversity loss continues to grow across many ecosystems, and the extinction crisis is deepening.'
+          },
+          {
+            OPTION_NAME:        'Export the Crops Worldwide',
+            OPTION_DESCRIPTION: 'Sell drought-resistant crops and farming technology to other countries.',
+            NARRATIVE_TITLE:    'Breaking News: Drought Crops Become Major Global Export',
+            NARRATIVE:          'New climate-resilient crops spread internationally, helping some countries improve food security. However, habitat loss and climate change continue to push many species toward extinction.',
+            STAT_EFFECTS: { economy: 12, healthcare: 4, education: -2, social: -4, environment: 6 },
+            CONSEQUENCE_INTRO:  'Crop exports boomed — but habitat loss and climate change continue to push many species toward extinction. The crisis is now unavoidable.'
+          }
+        ]
+      },
+
+      {
+        EVENT_TITLE:   'Extinction',
+        DEFAULT_INTRO: 'Many species around the world are close to extinction because of habitat loss, climate change, and human activity. Scientists warn that entire ecosystems could collapse.',
+        OPTIONS: [
+          {
+            OPTION_NAME:        'Strong Conservation Laws',
+            OPTION_DESCRIPTION: 'Create strict laws to protect habitats and endangered species, while funding public environmental education.',
+            NARRATIVE_TITLE:    'Breaking News: Global Conservation Efforts Expand',
+            NARRATIVE:          'New environmental laws slow the loss of some species and increase conservation awareness. At the same time, scientists develop powerful genetic tools that could bring extinct species back to life.',
+            STAT_EFFECTS: { economy: -6, healthcare: -2, education: 10, social: 6, environment: 15 },
+            CONSEQUENCE_INTRO:  'Conservation laws helped slow species loss — and now scientists have developed powerful genetic tools that could bring extinct species back to life.'
+          },
+          {
+            OPTION_NAME:        'Create Wildlife Reserves',
+            OPTION_DESCRIPTION: 'Build large protected areas for endangered species and support eco-tourism.',
+            NARRATIVE_TITLE:    'Breaking News: Protected Wildlife Zones Grow Worldwide',
+            NARRATIVE:          'Large reserves are created to protect endangered species and ecosystems. Meanwhile, new breakthroughs in DNA science make it possible to consider reviving species that have already disappeared.',
+            STAT_EFFECTS: { economy: 8, healthcare: 4, education: -2, social: -3, environment: 12 },
+            CONSEQUENCE_INTRO:  'Wildlife reserves protected many ecosystems — and breakthroughs in DNA science now make it possible to consider reviving species that have already disappeared.'
+          },
+          {
+            OPTION_NAME:        'Do Nothing',
+            OPTION_DESCRIPTION: 'Keep current policies and focus on economic stability instead of new environmental protections.',
+            NARRATIVE_TITLE:    'Breaking News: Species Loss Accelerates Worldwide',
+            NARRATIVE:          'Without stronger protections, biodiversity declines rapidly across many regions. In response to the growing crisis, scientists begin experimenting with technology that could bring extinct species back.',
+            STAT_EFFECTS: { economy: 6, healthcare: 4, education: 2, social: -8, environment: -15 },
+            CONSEQUENCE_INTRO:  'Without protection, biodiversity declined rapidly. In response to the crisis, scientists are now experimenting with technology that could bring extinct species back.'
+          }
+        ]
+      },
+
+      {
+        EVENT_TITLE:   'De-extinction',
+        DEFAULT_INTRO: 'Scientists successfully revive extinct animals using cloning and reconstructed DNA. This breakthrough could help restore ecosystems, but it also raises major ethical and environmental questions.',
+        OPTIONS: [
+          {
+            OPTION_NAME:        'Release Revived Species into the Wild',
+            OPTION_DESCRIPTION: 'Carefully reintroduce revived animals into protected habitats to help rebuild ecosystems and restore biodiversity.',
+            NARRATIVE_TITLE:    'Breaking News: Extinct Species Return to Natural Habitats',
+            NARRATIVE:          'After decades of scientific work, several extinct animals have been successfully reintroduced into carefully managed ecosystems. Scientists hope these species will help restore damaged environments, though experts warn that reintroducing long-lost animals may bring unexpected ecological challenges.',
+            STAT_EFFECTS: { economy: -2, healthcare: -3, education: 6, social: 6, environment: 15 },
+            CONSEQUENCE_INTRO: ''
+          },
+          {
+            OPTION_NAME:        'Keep Species in Zoos and Research Centres',
+            OPTION_DESCRIPTION: 'Keep revived species in controlled environments like zoos and research facilities so scientists can study them and the public can learn about extinction and conservation.',
+            NARRATIVE_TITLE:    'Breaking News: Revived Species Become Major Scientific Discovery',
+            NARRATIVE:          "The world's first revived extinct animals are now living in specialised research centres and zoos. Scientists continue studying their biology and genetics, while the public debates whether these species should remain protected in captivity or eventually return to the wild.",
+            STAT_EFFECTS: { economy: 8, healthcare: 3, education: 10, social: -6, environment: -5 },
+            CONSEQUENCE_INTRO: ''
+          },
+          {
+            OPTION_NAME:        'Commercialise the Species',
+            OPTION_DESCRIPTION: 'Use genetic material from revived species to develop new products, biotechnology, and commercial opportunities.',
+            NARRATIVE_TITLE:    'Breaking News: De-Extinction Industry Expands Worldwide',
+            NARRATIVE:          'Companies begin using genetic material from revived species to develop new biotechnology, medical products, and commercial innovations. While the industry grows rapidly, critics argue that extinct animals are being used for profit rather than conservation.',
+            STAT_EFFECTS: { economy: 15, healthcare: 4, education: 5, social: -10, environment: -8 },
+            CONSEQUENCE_INTRO: ''
+          }
+        ]
+      }
+    ]
+  },
+
+
+// ================================================================
+// PATH 2 — TECHNOLOGY
+// ================================================================
+  technology: {
+    PATH_TITLE:    'Technological Innovation',
+    PATH_SUBTITLE: 'Silicon & Circuit',
+    PATH_COLOUR:   'var(--colour-accent-cyan)',
+    PATH_CARD_ICON:   '⚡',
+    PATH_CARD_NAME:   'Technological<br>Innovation',
+    PATH_CARD_FLAVOR: 'Navigate the digital age — from online scams and cyber attacks to AI automation and the question of who controls the machines.',
+
+    EVENTS: [
+      {
+        EVENT_TITLE:   'Increase in Online Scams',
+        DEFAULT_INTRO: 'Scammers start sending large numbers of phishing emails, text messages, and phone calls pretending to be banks, government agencies, or delivery companies. Many people accidentally give away passwords, bank details and personal information. This leads to financial losses and identity theft, especially affecting older people and those who are less familiar with technology.',
+        OPTIONS: [
+          {
+            OPTION_NAME:        'Stronger Scam Detection Technology',
+            OPTION_DESCRIPTION: 'Governments and technology companies create advanced systems that automatically detect and block scam emails, texts, and calls before people receive them.',
+            NARRATIVE_TITLE:    'Breaking News: AI Filters Block Millions of Online Scams',
+            NARRATIVE:          'Advanced detection systems begin automatically blocking scam calls, texts, and emails across the country. As digital systems become more complex, experts warn that critical infrastructure like power grids may also need stronger cyber protection.',
+            STAT_EFFECTS: { economy: 10, healthcare: 2, education: -3, social: 6, environment: -4 },
+            CONSEQUENCE_INTRO:  'AI filters blocked millions of scams — but as digital systems grow more complex, experts warn that critical infrastructure like power grids may also need stronger cyber protection.'
+          },
+          {
+            OPTION_NAME:        'Public Awareness Campaigns',
+            OPTION_DESCRIPTION: 'Governments launch nationwide education programs that teach people how to recognise scams and stay safe online.',
+            NARRATIVE_TITLE:    'Breaking News: Nationwide Cyber Safety Education Launched',
+            NARRATIVE:          "Schools and community programs begin teaching people how to recognise online scams and stay safe on the internet. As more services move online, experts say stronger protection is needed for the country's digital infrastructure.",
+            STAT_EFFECTS: { economy: -4, healthcare: 3, education: 15, social: 12, environment: -2 },
+            CONSEQUENCE_INTRO:  'Education programs spread cyber awareness — but as more services move online, experts say stronger protection is needed for the country\'s digital infrastructure.'
+          },
+          {
+            OPTION_NAME:        'Stricter Laws and Punishments for Scammers',
+            OPTION_DESCRIPTION: 'Governments introduce stronger laws and international police cooperation to find and punish scammers more effectively.',
+            NARRATIVE_TITLE:    'Breaking News: Global Crackdown Targets Online Crime Networks',
+            NARRATIVE:          'International police partnerships begin tracking and prosecuting cyber criminals more aggressively. However, as technology continues to expand, governments realise that key digital systems like power and communication networks may also become targets.',
+            STAT_EFFECTS: { economy: 6, healthcare: 2, education: -3, social: 5, environment: -1 },
+            CONSEQUENCE_INTRO:  'Global crackdowns hit criminal networks hard — but as technology expands, governments realise that key digital systems like power grids may also become targets.'
+          }
+        ]
+      },
+
+      {
+        EVENT_TITLE:   'Cyber Security',
+        DEFAULT_INTRO: "Cyber experts warn that phishing scams and hacking attempts are increasing around the world. Some small power outages have already happened in other countries, and experts believe Australia's energy systems could be next. The government must decide how to strengthen cyber security before a major attack occurs.",
+        OPTIONS: [
+          {
+            OPTION_NAME:        'Invest in Stronger Infrastructure',
+            OPTION_DESCRIPTION: 'Upgrade cyber security systems and hire more trained experts. Build stronger protection for power grids and other important networks.',
+            NARRATIVE_TITLE:    'Breaking News: Major Cyber Defences Installed Across Critical Systems',
+            NARRATIVE:          'Governments invest heavily in new cyber defence networks protecting infrastructure and digital services. Despite stronger security, society becomes so dependent on technology that a large cyber attack could still cause serious disruption.',
+            STAT_EFFECTS: { economy: 12, healthcare: 8, education: -4, social: -6, environment: -7 },
+            CONSEQUENCE_INTRO:  'Cyber defences were reinforced — but society has become so dependent on technology that a large attack could still cause serious disruption. The banks are watching nervously.'
+          },
+          {
+            OPTION_NAME:        'Free Public Cyber Safety Education',
+            OPTION_DESCRIPTION: 'Create free nationwide programs that teach people how to stay safe online. This includes school lessons, community workshops, and online learning materials.',
+            NARRATIVE_TITLE:    'Breaking News: Digital Literacy Becomes Core School Subject',
+            NARRATIVE:          'Students across the country begin learning cyber safety and digital responsibility in schools. Even with better awareness, experts warn that large-scale cyber attacks on financial systems remain a growing risk.',
+            STAT_EFFECTS: { economy: -5, healthcare: 5, education: 15, social: 12, environment: -3 },
+            CONSEQUENCE_INTRO:  'Digital literacy spread across schools — but experts warn that large-scale cyber attacks on financial systems remain a serious and growing risk.'
+          },
+          {
+            OPTION_NAME:        'Partner with Technology Companies',
+            OPTION_DESCRIPTION: 'Work closely with large technology companies to monitor cyber threats and share information. These companies can help detect and stop cyber attacks faster.',
+            NARRATIVE_TITLE:    'Breaking News: Governments and Tech Giants Form Cyber Alliance',
+            NARRATIVE:          'Major technology companies begin sharing threat intelligence with governments to track global cyber attacks. However, the growing reliance on digital banking systems creates new vulnerabilities.',
+            STAT_EFFECTS: { economy: 10, healthcare: 6, education: 4, social: -10, environment: -4 },
+            CONSEQUENCE_INTRO:  'Tech companies joined forces with government — but growing reliance on digital banking systems is creating dangerous new vulnerabilities.'
+          }
+        ]
+      },
+
+      {
+        EVENT_TITLE:   'Cyber Attack',
+        DEFAULT_INTRO: "A large cyber attack hits Australia's four biggest banks. Online banking stops working, and hackers claim they have stolen customer information such as account details and passwords. People are worried about their money and personal data.",
+        OPTIONS: [
+          {
+            OPTION_NAME:        'Isolate Banking Networks',
+            OPTION_DESCRIPTION: 'Disconnect the affected banking systems from the internet and temporarily shut down online services. Experts investigate the attack and fix weaknesses before restoring services.',
+            NARRATIVE_TITLE:    'Breaking News: Banks Rebuild Digital Security After Major Cyber Crisis',
+            NARRATIVE:          'Financial institutions redesign their systems to prevent future attacks. As technology improves, many industries begin turning to artificial intelligence and automation to make systems more efficient and secure.',
+            STAT_EFFECTS: { economy: -12, healthcare: 3, education: 2, social: -8, environment: 1 },
+            CONSEQUENCE_INTRO:  'Banks rebuilt their systems from the ground up. As technology continues improving, many industries are now turning to AI and automation to prevent future crises.'
+          },
+          {
+            OPTION_NAME:        'Negotiate with the Hackers',
+            OPTION_DESCRIPTION: 'Communicate with the attackers to learn their demands and delay the release of stolen data. During this time, cyber experts strengthen security and try to track the criminals.',
+            NARRATIVE_TITLE:    'Breaking News: Cyber Attack Sparks Global Debate on Digital Security',
+            NARRATIVE:          'The banking crisis raises major questions about how governments should respond to cyber crime. In the following decades, companies invest heavily in AI systems to manage digital networks and reduce human error.',
+            STAT_EFFECTS: { economy: -6, healthcare: 2, education: 1, social: -12, environment: 1 },
+            CONSEQUENCE_INTRO:  'Negotiations bought time — but the crisis raised major questions about digital security. Companies are now investing heavily in AI to manage networks and reduce human error.'
+          },
+          {
+            OPTION_NAME:        'Launch a Cyber Counter-Attack',
+            OPTION_DESCRIPTION: "Use advanced AI tools and expert cyber teams to trace the hackers and attack their systems. The goal is to recover stolen data and shut down the criminals' networks.",
+            NARRATIVE_TITLE:    'Breaking News: Governments Deploy AI Cyber Defence Systems',
+            NARRATIVE:          'Advanced cyber defence programs are developed to detect and fight digital threats. These technologies quickly evolve into powerful AI systems that begin automating many tasks across industries.',
+            STAT_EFFECTS: { economy: 6, healthcare: 4, education: 3, social: -10, environment: -3 },
+            CONSEQUENCE_INTRO:  'The counter-attack worked — and in doing so, spawned powerful AI systems that are now beginning to automate tasks across industries. The question is: who controls them?'
+          }
+        ]
+      },
+
+      {
+        EVENT_TITLE:   'AI Automation',
+        DEFAULT_INTRO: 'Advanced robots and automation systems begin doing many jobs that humans used to do, especially in factories, transportation, and customer service. This creates growing concerns about job losses and inequality.',
+        OPTIONS: [
+          {
+            OPTION_NAME:        'Job Retraining Programs',
+            OPTION_DESCRIPTION: 'Governments fund training programs to help workers learn new skills for technology-related jobs.',
+            NARRATIVE_TITLE:    'Breaking News: New Tech Skills Programs Transform Workforce',
+            NARRATIVE:          'Large education programs help workers learn new technology skills as automation spreads across industries. Over time, AI systems become increasingly powerful and begin assisting with complex decision-making.',
+            STAT_EFFECTS: { economy: -8, healthcare: 3, education: 15, social: 10, environment: -3 },
+            CONSEQUENCE_INTRO:  'Retraining helped many workers adapt — but AI systems have kept advancing, and they are now beginning to assist with complex decision-making at every level of society.'
+          },
+          {
+            OPTION_NAME:        'Limiting Automation in Certain Jobs',
+            OPTION_DESCRIPTION: 'Governments create rules that limit how much automation companies can use, protecting some human jobs.',
+            NARRATIVE_TITLE:    'Breaking News: Governments Set Limits on Robot Workers',
+            NARRATIVE:          'New regulations slow the spread of automation in some industries to protect human jobs. Despite these limits, artificial intelligence continues advancing rapidly in research labs and technology companies.',
+            STAT_EFFECTS: { economy: -10, healthcare: 2, education: -4, social: 6, environment: 3 },
+            CONSEQUENCE_INTRO:  'Limits on automation protected many jobs — but AI has kept advancing rapidly in research labs, and the technology is now far beyond what the regulations anticipated.'
+          },
+          {
+            OPTION_NAME:        'Universal Basic Income',
+            OPTION_DESCRIPTION: 'The government provides a basic income to all citizens, helping people financially if robots replace many jobs.',
+            NARRATIVE_TITLE:    'Breaking News: Universal Basic Income Reshapes Economic System',
+            NARRATIVE:          'Governments introduce a basic income as automation replaces many traditional jobs. As AI systems continue improving, they begin playing larger roles in managing complex systems across society.',
+            STAT_EFFECTS: { economy: -12, healthcare: 6, education: -2, social: 12, environment: -3 },
+            CONSEQUENCE_INTRO:  'Basic income cushioned the economic disruption — but AI systems have kept improving, and they are now playing larger roles in managing complex systems across all of society.'
+          }
+        ]
+      },
+
+      {
+        EVENT_TITLE:   'AI Takeover',
+        DEFAULT_INTRO: 'Artificial Intelligence has become extremely advanced and now helps control important systems like power networks, financial markets, and government decision-making. Many people enjoy the efficiency AI brings, but others worry that humans are losing control.',
+        OPTIONS: [
+          {
+            OPTION_NAME:        'Strong Global AI Regulations',
+            OPTION_DESCRIPTION: 'Create strict international rules for how AI can be built and used. Humans must supervise important AI decisions, and ethical guidelines must be followed.',
+            NARRATIVE_TITLE:    'Breaking News: Global AI Rules Put Humans Back in Charge',
+            NARRATIVE:          'Governments around the world agree on strict laws requiring human oversight for major AI systems. While AI continues to power many services, people remain responsible for the most important decisions affecting society.',
+            STAT_EFFECTS: { economy: -6, healthcare: 6, education: 7, social: 12, environment: -3 },
+            CONSEQUENCE_INTRO: ''
+          },
+          {
+            OPTION_NAME:        'Integrate AI Across Society',
+            OPTION_DESCRIPTION: 'Invest heavily in AI and expand its use across government, healthcare, education, and business to improve efficiency and innovation.',
+            NARRATIVE_TITLE:    'Breaking News: AI Becomes the Backbone of Modern Society',
+            NARRATIVE:          'Artificial intelligence now manages transportation, healthcare systems, financial markets, and government planning. Many systems run more efficiently than ever before, though debates continue about how much control humans have over these powerful technologies.',
+            STAT_EFFECTS: { economy: 15, healthcare: 12, education: 10, social: -10, environment: -5 },
+            CONSEQUENCE_INTRO: ''
+          },
+          {
+            OPTION_NAME:        'Ban AI Development',
+            OPTION_DESCRIPTION: 'Stop creating new AI systems and slowly remove existing ones. Focus instead on human workers, human research, and non-AI technologies.',
+            NARRATIVE_TITLE:    'Breaking News: World Turns Away from Artificial Intelligence',
+            NARRATIVE:          'After global agreements to halt advanced AI development, many automated systems are shut down or replaced with human-controlled technology. Supporters say this protects human jobs and decision-making, while critics argue society has slowed technological progress.',
+            STAT_EFFECTS: { economy: -15, healthcare: -6, education: -5, social: 6, environment: 4 },
+            CONSEQUENCE_INTRO: ''
+          }
+        ]
+      }
+    ]
+  },
+
+
+// ================================================================
+// PATH 3 — GOVERNMENT
+// ================================================================
+  government: {
+    PATH_TITLE:    'Governmental Innovation',
+    PATH_SUBTITLE: 'Law & Liberty',
+    PATH_COLOUR:   'var(--colour-accent-lime)',
+    PATH_CARD_ICON:   '⚖',
+    PATH_CARD_NAME:   'Governmental<br>Innovation',
+    PATH_CARD_FLAVOR: 'Govern through a century of upheaval — mass migration, pandemic, famine, and political change. Can you build a just and stable society?',
+
+    EVENTS: [
+      {
+        EVENT_TITLE:   'Mass Migration',
+        DEFAULT_INTRO: 'Climate change, political conflict, and economic problems cause large numbers of people to move around the world. Many countries experience major increases in migrants and refugees.',
+        OPTIONS: [
+          {
+            OPTION_NAME:        'Open Borders Policy',
+            OPTION_DESCRIPTION: 'The country allows migrants to enter freely and provides support such as housing, education, and financial assistance.',
+            NARRATIVE_TITLE:    'Breaking News: Migrant Arrivals Reach Record Levels',
+            NARRATIVE:          'With borders open, large numbers of migrants and refugees begin settling in major cities and regional areas. Governments now face the challenge of creating long-term systems to house and support displaced communities.',
+            STAT_EFFECTS: { economy: -10, healthcare: -5, education: 6, social: 20, environment: -4 },
+            CONSEQUENCE_INTRO:  'Open borders welcomed millions — but governments now face the enormous challenge of creating long-term systems to house and support displaced communities. Sea levels keep rising.'
+          },
+          {
+            OPTION_NAME:        'Strict Border Control',
+            OPTION_DESCRIPTION: 'The government increases border security and limits how many migrants can enter the country.',
+            NARRATIVE_TITLE:    'Breaking News: Border Restrictions Increase Pressure in Neighbouring Regions',
+            NARRATIVE:          'Tighter border security slows migration into the country, but refugee populations grow in nearby nations. International organisations begin pushing for coordinated resettlement solutions.',
+            STAT_EFFECTS: { economy: 8, healthcare: -6, education: -4, social: -15, environment: 5 },
+            CONSEQUENCE_INTRO:  'Borders closed — but refugee populations are growing in nearby nations, and international organisations are demanding coordinated resettlement solutions.'
+          },
+          {
+            OPTION_NAME:        'International Partnerships',
+            OPTION_DESCRIPTION: 'Countries work together to manage migration through international agreements and shared support systems.',
+            NARRATIVE_TITLE:    'Breaking News: Global Migration Agreement Signed',
+            NARRATIVE:          'Several countries form new international agreements to manage migration more cooperatively. These partnerships begin focusing on long-term refugee resettlement and shared humanitarian support.',
+            STAT_EFFECTS: { economy: 6, healthcare: -4, education: 5, social: 12, environment: -6 },
+            CONSEQUENCE_INTRO:  'International agreements created a framework for cooperation — but rising sea levels are now forcing millions more from their homes, putting the system to its ultimate test.'
+          }
+        ]
+      },
+
+      {
+        EVENT_TITLE:   'Refugee Resettlement',
+        DEFAULT_INTRO: 'Rising sea levels and extreme weather force millions of people to leave their homes. Countries must decide how to support these climate refugees.',
+        OPTIONS: [
+          {
+            OPTION_NAME:        'Integration Programs',
+            OPTION_DESCRIPTION: 'Refugees are supported with housing, education, job training, and community programs to help them settle.',
+            NARRATIVE_TITLE:    'Breaking News: New Communities Grow Across the Country',
+            NARRATIVE:          'Refugees begin settling into local communities with support programs and education services. As global travel and population movement increase, health experts warn that future disease outbreaks could spread quickly across borders.',
+            STAT_EFFECTS: { economy: -6, healthcare: 6, education: 12, social: 18, environment: -5 },
+            CONSEQUENCE_INTRO:  'Integration programs built new communities — but as global movement increases, health experts warn that future disease outbreaks could spread rapidly across borders. And then, one does.'
+          },
+          {
+            OPTION_NAME:        'Temporary Camps with Aid',
+            OPTION_DESCRIPTION: 'Refugees stay in temporary camps with basic support like food, shelter, and healthcare.',
+            NARRATIVE_TITLE:    'Breaking News: Refugee Camps Expand as Displacement Continues',
+            NARRATIVE:          'Large refugee camps grow near national borders, housing thousands of displaced people. Aid groups warn that crowded living conditions may increase the risk of infectious disease outbreaks.',
+            STAT_EFFECTS: { economy: 10, healthcare: -6, education: -8, social: -10, environment: 5 },
+            CONSEQUENCE_INTRO:  'Camps grew rapidly — but crowded conditions are now a major infection risk. Aid groups warned this would happen. Their warnings are about to be proved right.'
+          },
+          {
+            OPTION_NAME:        'Regional Resettlement',
+            OPTION_DESCRIPTION: 'Countries work together to spread refugee populations across several nations.',
+            NARRATIVE_TITLE:    'Breaking News: Countries Share Responsibility for Refugees',
+            NARRATIVE:          'Refugee populations are distributed across several countries through new international agreements. Increased travel and global movement raise concerns about how quickly diseases could spread between nations.',
+            STAT_EFFECTS: { economy: 8, healthcare: -4, education: -5, social: 6, environment: 4 },
+            CONSEQUENCE_INTRO:  'Shared resettlement distributed the burden — but increased global movement is raising serious concerns about how quickly a new disease could spread between nations.'
+          }
+        ]
+      },
+
+      {
+        EVENT_TITLE:   'Pandemic',
+        DEFAULT_INTRO: 'A dangerous virus spreads quickly around the world. Hospitals become overwhelmed and governments must act quickly to protect their populations.',
+        OPTIONS: [
+          {
+            OPTION_NAME:        'Strict Lockdowns',
+            OPTION_DESCRIPTION: 'People must stay home, travel is limited, and many businesses temporarily close to slow the spread of the virus.',
+            NARRATIVE_TITLE:    'Breaking News: Global Economy Slows During Long Lockdowns',
+            NARRATIVE:          'Lockdowns help slow the virus, but supply chains and farming industries struggle to keep operating normally. Over time, food production begins to decline in several regions.',
+            STAT_EFFECTS: { economy: -18, healthcare: 18, education: -10, social: -6, environment: 8 },
+            CONSEQUENCE_INTRO:  'Lockdowns slowed the virus — but supply chains and farming industries struggled badly. Food production has begun to decline in several regions, and hunger is spreading.'
+          },
+          {
+            OPTION_NAME:        'Accelerate Vaccine Development',
+            OPTION_DESCRIPTION: 'Governments invest heavily in developing vaccines as quickly as possible.',
+            NARRATIVE_TITLE:    'Breaking News: Scientists Race to Develop Pandemic Vaccine',
+            NARRATIVE:          'Governments invest heavily in medical research to develop vaccines quickly. While progress is made, the pandemic disrupts agriculture and food transport systems around the world.',
+            STAT_EFFECTS: { economy: -6, healthcare: 20, education: 6, social: 5, environment: -4 },
+            CONSEQUENCE_INTRO:  'Vaccines were developed faster than ever — but the pandemic still disrupted agriculture and food transport systems. Food shortages are now spreading across multiple regions.'
+          },
+          {
+            OPTION_NAME:        'Herd Immunity Strategy',
+            OPTION_DESCRIPTION: 'The virus spreads through low-risk groups while vulnerable people are protected.',
+            NARRATIVE_TITLE:    'Breaking News: Virus Spreads as Governments Test Herd Immunity',
+            NARRATIVE:          'Some countries allow the virus to spread among low-risk populations while protecting vulnerable groups. The ongoing health crisis disrupts farms, food supply chains, and international trade.',
+            STAT_EFFECTS: { economy: 10, healthcare: -20, education: 6, social: -12, environment: -3 },
+            CONSEQUENCE_INTRO:  'The herd immunity gamble kept economies running — but the ongoing health crisis has disrupted farms, food supply chains, and international trade. Famine looms.'
+          }
+        ]
+      },
+
+      {
+        EVENT_TITLE:   'Famine',
+        DEFAULT_INTRO: 'After years of extreme weather and damaged farmland, food production drops dramatically. Millions of people struggle to find enough food, and hunger spreads across the country.',
+        OPTIONS: [
+          {
+            OPTION_NAME:        'Seek International Aid',
+            OPTION_DESCRIPTION: 'The country asks other nations and international organisations for emergency food supplies and farming support.',
+            NARRATIVE_TITLE:    'Breaking News: Global Food Aid Arrives as Crisis Deepens',
+            NARRATIVE:          'International organisations deliver emergency food supplies to help stabilise the situation. However, many citizens question how the country reached this point and demand political change.',
+            STAT_EFFECTS: { economy: -6, healthcare: 18, education: -5, social: 12, environment: -6 },
+            CONSEQUENCE_INTRO:  'International aid arrived — but many citizens are furious about how the country reached this point. Demands for political change are now impossible to ignore.'
+          },
+          {
+            OPTION_NAME:        'Invest in Vertical Farming',
+            OPTION_DESCRIPTION: 'Cities build large indoor farms that grow food using advanced technology.',
+            NARRATIVE_TITLE:    'Breaking News: Cities Turn to High-Tech Farming',
+            NARRATIVE:          'Urban vertical farms begin producing food in controlled environments, reducing reliance on damaged farmland. The crisis sparks national debate about how the country should rebuild and prepare for the future.',
+            STAT_EFFECTS: { economy: -12, healthcare: 10, education: 8, social: 6, environment: 15 },
+            CONSEQUENCE_INTRO:  'Vertical farms helped cities survive — and the crisis has sparked urgent national debate about how the country should rebuild. A new political movement is gaining momentum.'
+          },
+          {
+            OPTION_NAME:        'Food Rationing Programs',
+            OPTION_DESCRIPTION: 'The government controls food distribution so everyone receives a limited but fair amount.',
+            NARRATIVE_TITLE:    'Breaking News: Government Introduces Nationwide Food Rationing',
+            NARRATIVE:          'Strict rationing helps distribute limited food supplies more fairly across the population. Public pressure grows for new leadership and long-term solutions to prevent future crises.',
+            STAT_EFFECTS: { economy: -8, healthcare: 6, education: -4, social: 14, environment: -4 },
+            CONSEQUENCE_INTRO:  'Rationing distributed food fairly — but public pressure for new leadership and long-term solutions has reached a boiling point. A political transformation is coming.'
+          }
+        ]
+      },
+
+      {
+        EVENT_TITLE:   'Change of Government',
+        DEFAULT_INTRO: 'After years of crises, many people want change. A surprise election brings a new eco-socialist government to power. The new leaders promise major reforms to protect the environment, reduce inequality, and improve social programs.',
+        OPTIONS: [
+          {
+            OPTION_NAME:        'Radical Policy Reform',
+            OPTION_DESCRIPTION: 'The government quickly introduces major new laws on climate action, taxes, and social programs to rapidly transform society.',
+            NARRATIVE_TITLE:    'Breaking News: Government Launches Major Social and Climate Reforms',
+            NARRATIVE:          'The new government rapidly introduces sweeping reforms across climate policy, wealth distribution, and social programs. Supporters say the bold changes could transform society, while critics warn the speed of reform may create economic challenges.',
+            STAT_EFFECTS: { economy: -15, healthcare: 8, education: 10, social: 18, environment: 15 },
+            CONSEQUENCE_INTRO: ''
+          },
+          {
+            OPTION_NAME:        'Introduce Change Slowly',
+            OPTION_DESCRIPTION: 'The government works with businesses and political parties to introduce reforms gradually to maintain stability.',
+            NARRATIVE_TITLE:    'Breaking News: Government Begins Gradual Reform Plan',
+            NARRATIVE:          'The new leadership works with businesses, communities, and political parties to slowly introduce environmental and social reforms. Supporters say the approach protects economic stability, though some activists worry progress may be too slow.',
+            STAT_EFFECTS: { economy: 10, healthcare: 4, education: 5, social: 6, environment: -8 },
+            CONSEQUENCE_INTRO: ''
+          },
+          {
+            OPTION_NAME:        'Prioritise Environment',
+            OPTION_DESCRIPTION: 'The government focuses strongly on protecting nature, restoring habitats, and introducing strict environmental laws.',
+            NARRATIVE_TITLE:    'Breaking News: Ambitious Environmental Restoration Plan Announced',
+            NARRATIVE:          'The government launches major projects to restore ecosystems, protect wildlife, and transform farming practices. Environmental groups celebrate the bold action, while industry leaders debate the economic impact of the new regulations.',
+            STAT_EFFECTS: { economy: -12, healthcare: 10, education: -5, social: 6, environment: 20 },
+            CONSEQUENCE_INTRO: ''
+          }
+        ]
+      }
+    ]
+  }
+
+};
+</script>
+
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Lora:ital,wght@0,400;0,600;1,400&display=swap');
+
+:root {
+  --colour-background:        #080c10;
+  --colour-surface:           #0e1318;
+  --colour-surface-raised:    #141c24;
+  --colour-border:            #1e2d3a;
+  --colour-border-bright:     #2a3f52;
+  --colour-accent-lime:       #d4f542;
+  --colour-accent-red:        #ff4f5e;
+  --colour-accent-cyan:       #42c8f5;
+  --colour-text:              #dce8f0;
+  --colour-text-muted:        #5a7080;
+  --colour-economy:           #42f5a8;
+  --colour-healthcare:        #42b8f5;
+  --colour-education:         #b842f5;
+  --colour-social:            #f5a842;
+  --colour-environment:       #7af542;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body {
+  font-family: 'Lora', serif;
+  background: var(--colour-background);
+  color: var(--colour-text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.page { display:none; }
+.page.active { display:flex; flex-direction:column; min-height:100vh; }
+
+.noise-overlay {
+  position:fixed; inset:0; pointer-events:none; z-index:0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity: 0.6;
+}
+
+/* LANDING */
+#landing {
+  flex: 1;
+  align-items:center; justify-content:center;
+  position:relative; overflow:hidden;
+  background: radial-gradient(ellipse 80% 60% at 50% 120%, rgba(212,245,66,0.05) 0%, transparent 60%),
+              radial-gradient(ellipse 60% 40% at 10% 20%, rgba(66,200,245,0.04) 0%, transparent 50%),
+              var(--colour-background);
+}
+
+.hex-grid {
+  position:absolute; inset:0; pointer-events:none; opacity:0.12;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='52'%3E%3Cpath d='M30 2 L58 17 L58 47 L30 50 L2 47 L2 17Z' fill='none' stroke='%23d4f542' stroke-width='0.5'/%3E%3C/svg%3E");
+  background-size: 60px 52px;
+}
+
+.landing-inner {
+  z-index:1; text-align:center;
+  padding:40px 24px;
+  width:100%; max-width:900px;
+  margin:0 auto;
+  animation: riseFade 1.2s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+@keyframes riseFade {
+  from { opacity:0; transform:translateY(40px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+.landing-eyebrow {
+  font-family:'Space Mono', monospace;
+  font-size:clamp(8px,1.5vw,10px); letter-spacing:0.5em;
+  color:var(--colour-accent-lime); text-transform:uppercase;
+  margin-bottom:20px; opacity:0.8;
+}
+
+.landing-title {
+  font-family:'Bebas Neue', sans-serif;
+  font-size:clamp(56px,14vw,180px);
+  line-height:0.85; letter-spacing:0.02em;
+  color:var(--colour-text); position:relative;
+}
+
+.landing-title .paren { color:var(--colour-accent-lime); }
+.landing-title .sub {
+  display:block; font-size:0.38em;
+  color:var(--colour-accent-red); letter-spacing:0.18em;
+  margin-top:10px;
+}
+
+.landing-rule {
+  width:80px; height:1px;
+  background:linear-gradient(90deg, transparent, var(--colour-accent-lime), transparent);
+  margin:28px auto;
+}
+
+.landing-tagline {
+  font-family:'Lora', serif; font-style:italic;
+  font-size:clamp(13px,1.8vw,16px); color:var(--colour-text-muted);
+  letter-spacing:0.04em; margin-bottom:40px;
+  max-width:640px; margin-left:auto; margin-right:auto;
+  line-height:1.7;
+}
+
+.btn-primary {
+  font-family:'Bebas Neue', sans-serif;
+  font-size:clamp(16px,3vw,20px); letter-spacing:0.18em;
+  color:var(--colour-background); background:var(--colour-accent-lime);
+  border:none; padding:16px clamp(32px,6vw,72px); cursor:pointer;
+  clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);
+  transition:all 0.25s; position:relative; overflow:hidden;
+}
+.btn-primary:hover { transform:scale(1.04); box-shadow:0 0 48px rgba(212,245,66,0.35); }
+
+/* PATH SELECT */
+#pathselect {
+  align-items:center; justify-content:center;
+  padding:clamp(24px,5vh,48px) 24px; position:relative;
+  background: var(--colour-background); overflow:hidden;
+}
+#pathselect::before {
+  content:''; position:absolute; inset:0;
+  background:radial-gradient(ellipse 70% 50% at 50% 100%, rgba(66,200,245,0.05) 0%, transparent 60%);
+  pointer-events:none;
+}
+
+.path-header {
+  text-align:center; margin-bottom:clamp(24px,4vh,48px); z-index:1;
+  animation: riseFade 0.8s ease both;
+}
+
+.path-eyebrow {
+  font-family:'Space Mono',monospace; font-size:clamp(8px,1.5vw,10px);
+  letter-spacing:0.4em; color:var(--colour-accent-cyan);
+  text-transform:uppercase; margin-bottom:12px; display:block;
+}
+
+.path-heading {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(28px,5vw,72px);
+  letter-spacing:0.04em; color:var(--colour-text); line-height:1;
+}
+
+.path-sub {
+  font-family:'Lora',serif; font-style:italic;
+  font-size:clamp(12px,1.8vw,14px); color:var(--colour-text-muted);
+  margin-top:12px; max-width:560px;
+}
+
+.paths-grid {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:20px; max-width:960px; width:100%; z-index:1;
+  animation: riseFade 0.9s 0.15s ease both;
+}
+
+@media (max-width: 640px) {
+  .paths-grid { grid-template-columns: 1fr; max-width: 400px; }
+}
+
+.path-card {
+  background:var(--colour-surface);
+  border:1px solid var(--colour-border);
+  padding:clamp(20px,3vh,32px) 24px; cursor:pointer;
+  position:relative; overflow:hidden; transition:all 0.25s;
+  display:flex; flex-direction:column; align-items:center; text-align:center;
+}
+.path-card::before {
+  content:''; position:absolute; inset:0;
+  border:2px solid transparent; transition:border-color 0.25s;
+}
+.path-card:hover { transform:translateY(-6px); background:var(--colour-surface-raised); }
+.path-card.technology:hover::before   { border-color:var(--colour-accent-cyan); }
+.path-card.environment:hover::before  { border-color:var(--colour-environment); }
+.path-card.government:hover::before   { border-color:var(--colour-accent-lime); }
+
+.path-icon {
+  font-size:clamp(36px,5vw,48px); margin-bottom:20px;
+  display:block; line-height:1;
+}
+.path-name {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(22px,3vw,28px); letter-spacing:0.08em;
+  color:var(--colour-text); margin-bottom:12px; line-height:1;
+}
+.path-flavor {
+  font-family:'Lora',serif; font-style:italic;
+  font-size:clamp(11px,1.5vw,13px); color:var(--colour-text-muted);
+  line-height:1.7; flex:1;
+}
+.path-tag {
+  font-family:'Space Mono',monospace;
+  font-size:9px; letter-spacing:0.3em; text-transform:uppercase;
+  margin-top:20px; padding:5px 12px; border:1px solid;
+}
+.path-card.technology   .path-tag { color:var(--colour-accent-cyan);  border-color:rgba(66,200,245,0.3); }
+.path-card.environment  .path-tag { color:var(--colour-environment);  border-color:rgba(122,245,66,0.3); }
+.path-card.government   .path-tag { color:var(--colour-accent-lime);  border-color:rgba(212,245,66,0.3); }
+
+/* GAME PAGE */
+#game { background:var(--colour-background); min-height:100vh; }
+
+.game-topbar {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px clamp(16px,3vw,32px);
+  border-bottom:1px solid var(--colour-border);
+  background:var(--colour-surface); flex-shrink:0;
+}
+
+.game-wordmark {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(16px,2.5vw,20px); letter-spacing:0.12em;
+  color:var(--colour-accent-lime);
+}
+
+.year-block { text-align:center; }
+.year-lbl {
+  font-family:'Space Mono',monospace; font-size:9px;
+  letter-spacing:0.35em; color:var(--colour-text-muted);
+  text-transform:uppercase; display:block; margin-bottom:2px;
+}
+.year-val {
+  font-family:'Bebas Neue',sans-serif; font-size:clamp(28px,4vw,38px);
+  color:var(--colour-accent-lime); letter-spacing:0.08em; line-height:1;
+  transition:color 0.3s;
+}
+
+.path-badge {
+  font-family:'Space Mono',monospace; font-size:9px;
+  letter-spacing:0.25em; text-transform:uppercase;
+  padding:5px 14px; border:1px solid; text-align:right;
+}
+.round-lbl {
+  font-family:'Space Mono',monospace; font-size:10px;
+  color:var(--colour-text-muted); letter-spacing:0.1em;
+  margin-top:4px; display:block;
+}
+
+.game-body {
+  display:grid;
+  grid-template-columns:clamp(200px,22vw,280px) 1fr;
+  flex:1; overflow:hidden;
+  height:calc(100vh - 68px - 56px);
+}
+
+@media (max-width: 640px) {
+  .game-body { grid-template-columns: 1fr; height:auto; overflow:visible; }
+  #game { overflow-y:auto; }
+}
+
+.stats-side {
+  border-right:1px solid var(--colour-border);
+  background:var(--colour-surface);
+  padding:clamp(16px,2vh,24px) 18px;
+  overflow-y:auto;
+  display:flex; flex-direction:column; gap:14px;
+}
+
+@media (max-width: 640px) {
+  .stats-side {
+    border-right:none; border-bottom:1px solid var(--colour-border);
+    flex-direction:row; flex-wrap:wrap; gap:10px; overflow-y:visible;
+  }
+  .stat-block { flex:1 1 40%; min-width:120px; }
+}
+
+.stats-label {
+  font-family:'Space Mono',monospace; font-size:9px;
+  letter-spacing:0.35em; color:var(--colour-text-muted);
+  text-transform:uppercase; margin-bottom:2px;
+}
+
+.stat-block { position:relative; }
+.stat-row {
+  display:flex; justify-content:space-between;
+  align-items:baseline; margin-bottom:6px;
+}
+.stat-name-txt {
+  font-family:'Space Mono',monospace; font-size:clamp(8px,1.2vw,10px);
+  font-weight:700; letter-spacing:0.08em; text-transform:uppercase;
+}
+.stat-num {
+  font-family:'Space Mono',monospace; font-size:clamp(10px,1.5vw,12px);
+  font-weight:700; transition:color 0.4s;
+}
+
+.bar-track {
+  height:16px; background:rgba(255,255,255,0.04);
+  border:1px solid var(--colour-border);
+  position:relative; overflow:visible; border-radius:1px;
+}
+.bar-fill {
+  height:100%; transition:width 1s cubic-bezier(0.4,0,0.2,1);
+  border-radius:1px; position:relative;
+}
+.bar-midline {
+  position:absolute; top:-4px; bottom:-4px;
+  left:50%; width:2px;
+  background:rgba(255,255,255,0.18);
+  transform:translateX(-50%); z-index:2;
+}
+
+.bar-fill.economy    { background:linear-gradient(90deg,#1a6040,var(--colour-economy)); }
+.bar-fill.healthcare { background:linear-gradient(90deg,#0a4060,var(--colour-healthcare)); }
+.bar-fill.education  { background:linear-gradient(90deg,#4a1a7a,var(--colour-education)); }
+.bar-fill.social     { background:linear-gradient(90deg,#7a4010,var(--colour-social)); }
+.bar-fill.environment{ background:linear-gradient(90deg,#1a5a10,var(--colour-environment)); }
+
+.stat-name-txt.economy    { color:var(--colour-economy); }
+.stat-name-txt.healthcare { color:var(--colour-healthcare); }
+.stat-name-txt.education  { color:var(--colour-education); }
+.stat-name-txt.social     { color:var(--colour-social); }
+.stat-name-txt.environment{ color:var(--colour-environment); }
+.stat-num.economy    { color:var(--colour-economy); }
+.stat-num.healthcare { color:var(--colour-healthcare); }
+.stat-num.education  { color:var(--colour-education); }
+.stat-num.social     { color:var(--colour-social); }
+.stat-num.environment{ color:var(--colour-environment); }
+
+.scenario-main {
+  overflow-y:auto;
+  padding:clamp(20px,3vh,36px) clamp(20px,4vw,40px);
+  display:flex; flex-direction:column;
+}
+
+.event-tag {
+  font-family:'Space Mono',monospace; font-size:9px;
+  letter-spacing:0.4em; text-transform:uppercase;
+  color:var(--colour-accent-red); margin-bottom:10px;
+}
+.event-title {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(32px,5vw,68px);
+  line-height:0.95; letter-spacing:0.03em;
+  color:var(--colour-text); margin-bottom:20px;
+}
+.event-desc {
+  font-family:'Lora',serif; font-size:clamp(13px,1.8vw,15px);
+  line-height:1.8; color:#8aa0b0;
+  max-width:600px; margin-bottom:32px;
+  padding-left:16px; border-left:2px solid var(--colour-border-bright);
+}
+.choose-lbl {
+  font-family:'Space Mono',monospace; font-size:9px;
+  letter-spacing:0.35em; color:var(--colour-text-muted);
+  text-transform:uppercase; margin-bottom:14px;
+}
+
+.options-row {
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:14px; margin-bottom:32px;
+}
+@media (max-width: 860px) {
+  .options-row { grid-template-columns: 1fr; }
+}
+
+.opt-card {
+  background:var(--colour-surface);
+  border:1px solid var(--colour-border);
+  padding:20px 18px; cursor:pointer;
+  position:relative; transition:all 0.22s;
+  display:flex; flex-direction:column;
+}
+.opt-card::after {
+  content:''; position:absolute; inset:-1px;
+  border:2px solid var(--colour-accent-lime);
+  opacity:0; transition:opacity 0.2s; pointer-events:none;
+}
+.opt-card:hover { background:var(--colour-surface-raised); transform:translateY(-3px); }
+.opt-card:hover::after { opacity:1; }
+.opt-card.disabled { opacity:0.3; pointer-events:none; }
+
+.opt-letter {
+  font-family:'Space Mono',monospace; font-size:9px;
+  color:var(--colour-accent-lime); letter-spacing:0.25em;
+  text-transform:uppercase; margin-bottom:8px;
+}
+.opt-title {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(17px,2.5vw,20px); letter-spacing:0.05em;
+  color:var(--colour-text); margin-bottom:8px; line-height:1.1;
+}
+.opt-desc {
+  font-family:'Lora',serif; font-size:12px;
+  line-height:1.65; color:var(--colour-text-muted); flex:1;
+}
+.opt-hint-wrap {
+  margin-top:14px; padding-top:12px;
+  border-top:1px solid var(--colour-border);
+  display:flex; flex-direction:column; gap:6px;
+}
+.opt-hint-known { display:flex; gap:6px; flex-wrap:wrap; }
+.opt-hint-unknown { display:flex; gap:5px; flex-wrap:wrap; }
+
+.hint-up, .hint-down, .hint-unknown {
+  font-family:'Space Mono',monospace; font-size:9px;
+  padding:3px 7px; border-radius:1px; letter-spacing:0.04em;
+}
+.hint-up      { background:rgba(122,245,66,0.1);  color:#7af542; border:1px solid rgba(122,245,66,0.25); }
+.hint-down    { background:rgba(255,79,94,0.1);   color:var(--colour-accent-red); border:1px solid rgba(255,79,94,0.25); }
+.hint-unknown { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); }
+
+.hint-label {
+  font-family:'Space Mono',monospace; font-size:8px;
+  color:var(--colour-text-muted); letter-spacing:0.08em;
+}
+
+/* BOTTOM BAR */
+.game-bottom {
+  padding:14px clamp(16px,3vw,32px);
+  border-top:1px solid var(--colour-border);
+  background:var(--colour-surface);
+  display:flex; justify-content:space-between; align-items:center;
+  flex-shrink:0;
+}
+
+.bottom-left { display:flex; gap:10px; align-items:center; }
+
+.btn-end-early {
+  font-family:'Space Mono',monospace; font-size:10px;
+  letter-spacing:0.12em; text-transform:uppercase;
+  color:var(--colour-accent-red); background:transparent;
+  border:1px solid rgba(255,79,94,0.4);
+  padding:10px 22px; cursor:pointer; transition:all 0.2s;
+}
+.btn-end-early:hover { background:rgba(255,79,94,0.08); border-color:var(--colour-accent-red); }
+
+.btn-undo {
+  font-family:'Space Mono',monospace; font-size:10px;
+  letter-spacing:0.12em; text-transform:uppercase;
+  color:var(--colour-accent-cyan); background:transparent;
+  border:1px solid rgba(66,200,245,0.4);
+  padding:10px 22px; cursor:pointer; transition:all 0.2s;
+  display:none;
+}
+.btn-undo:hover { background:rgba(66,200,245,0.08); border-color:var(--colour-accent-cyan); }
+.btn-undo.visible { display:block; }
+
+/* IMPACT OVERLAY */
+.overlay {
+  position:fixed; inset:0; z-index:200;
+  background:rgba(4,8,14,0.9);
+  display:flex; align-items:center; justify-content:center;
+  opacity:0; pointer-events:none; transition:opacity 0.3s;
+  backdrop-filter:blur(4px); padding:16px;
+}
+.overlay.show { opacity:1; pointer-events:all; }
+
+.overlay-box {
+  background:var(--colour-surface);
+  border:1px solid var(--colour-border-bright);
+  padding:clamp(24px,4vh,40px); width:520px; max-width:100%;
+  position:relative; max-height:90vh; overflow-y:auto;
+}
+.overlay-box::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg, var(--colour-accent-red), var(--colour-accent-lime));
+}
+
+.ol-tag {
+  font-family:'Space Mono',monospace; font-size:9px;
+  letter-spacing:0.4em; text-transform:uppercase;
+  color:var(--colour-text-muted); margin-bottom:8px; display:block;
+}
+.ol-title {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(20px,3.5vw,28px); letter-spacing:0.04em;
+  color:var(--colour-accent-lime); margin-bottom:12px;
+}
+.ol-narrative {
+  font-family:'Lora',serif; font-style:italic;
+  font-size:clamp(12px,1.6vw,14px); line-height:1.75;
+  color:#8aa0b0; margin-bottom:20px;
+  padding:14px 16px;
+  border-left:2px solid var(--colour-accent-lime);
+  background:rgba(212,245,66,0.04);
+}
+.ol-divider {
+  font-family:'Space Mono',monospace; font-size:8px;
+  letter-spacing:0.2em; text-transform:uppercase;
+  color:var(--colour-text-muted); margin-bottom:14px;
+  display:flex; align-items:center; gap:8px;
+}
+.ol-divider::before, .ol-divider::after {
+  content:''; flex:1; height:1px; background:var(--colour-border);
+}
+.ol-impact-row {
+  display:flex; flex-direction:column; gap:14px; margin-bottom:24px;
+}
+
+.impact-item {
+  opacity:0; transform:translateX(-12px);
+  transition:all 0.4s;
+  display:flex; flex-direction:column; gap:6px;
+}
+.impact-item.show { opacity:1; transform:translateX(0); }
+
+.impact-header {
+  display:flex; justify-content:space-between; align-items:center;
+}
+.impact-name {
+  font-family:'Space Mono',monospace; font-size:10px;
+  text-transform:uppercase; letter-spacing:0.08em;
+}
+.impact-arrow {
+  font-family:'Bebas Neue',sans-serif; font-size:18px; letter-spacing:0.05em;
+}
+.impact-arrow.up      { color:#7af542; }
+.impact-arrow.down    { color:var(--colour-accent-red); }
+.impact-arrow.neutral { color:var(--colour-text-muted); font-size:14px; }
+
+.impact-divider {
+  font-family:'Space Mono',monospace; font-size:8px;
+  letter-spacing:0.2em; text-transform:uppercase;
+  color:var(--colour-text-muted); text-align:center;
+  padding:4px 0; border-top:1px solid var(--colour-border); margin-top:2px;
+}
+.impact-unknown-tag {
+  font-family:'Space Mono',monospace; font-size:7px;
+  letter-spacing:0.1em; text-transform:uppercase;
+  color:var(--colour-text-muted);
+  background:rgba(255,255,255,0.04);
+  border:1px solid var(--colour-border);
+  padding:2px 5px; border-radius:1px;
+  vertical-align:middle; margin-left:6px;
+}
+.impact-item.impact-unknown { opacity:0; }
+.impact-item.impact-unknown.show { opacity:0.85; }
+
+.impact-bar-track {
+  height:6px; background:rgba(255,255,255,0.06);
+  border-radius:1px; overflow:hidden;
+}
+.impact-bar-fill {
+  height:100%; width:0%;
+  transition:width 0.7s cubic-bezier(0.4,0,0.2,1);
+}
+.impact-bar-fill.up   { background:#7af542; }
+.impact-bar-fill.down { background:var(--colour-accent-red); }
+
+.ol-continue {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:18px; letter-spacing:0.12em;
+  color:var(--colour-background); background:var(--colour-accent-lime);
+  border:none; padding:14px 36px; cursor:pointer;
+  clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);
+  opacity:0; transition:opacity 0.3s 0s, transform 0.2s;
+  display:block;
+}
+.ol-continue.show { opacity:1; }
+.ol-continue:hover { transform:scale(1.03); background:#fff; }
+
+/* END PAGE */
+#endpage {
+  align-items:center; justify-content:center;
+  padding:clamp(32px,6vh,60px) clamp(20px,4vw,40px); position:relative; overflow:hidden;
+}
+#endpage::before {
+  content:''; position:absolute; inset:0;
+  background:radial-gradient(ellipse 60% 50% at 50% 110%, rgba(212,245,66,0.05) 0%, transparent 65%);
+  pointer-events:none;
+}
+
+.end-wrap { width:100%; max-width:860px; z-index:1; animation:riseFade 0.9s ease both; }
+.end-header { text-align:center; margin-bottom:clamp(24px,4vh,44px); }
+.end-eyebrow {
+  font-family:'Space Mono',monospace; font-size:9px;
+  letter-spacing:0.5em; text-transform:uppercase;
+  color:var(--colour-accent-red); display:block; margin-bottom:12px;
+}
+.end-title {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(44px,9vw,110px);
+  line-height:1; letter-spacing:0.03em; color:var(--colour-text);
+}
+.end-year {
+  font-family:'Space Mono',monospace; font-size:12px;
+  color:var(--colour-text-muted); letter-spacing:0.25em; margin-top:8px;
+}
+
+.end-bars { display:flex; flex-direction:column; gap:clamp(12px,2vh,20px); margin-bottom:40px; }
+.end-stat-row {
+  display:grid; grid-template-columns:clamp(110px,18vw,170px) 1fr 48px;
+  align-items:center; gap:clamp(8px,2vw,18px);
+}
+.end-stat-name {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(15px,2.5vw,20px); letter-spacing:0.08em;
+}
+.end-track {
+  height:24px; background:rgba(255,255,255,0.04);
+  border:1px solid var(--colour-border); position:relative;
+  overflow:visible; border-radius:1px;
+}
+.end-fill {
+  height:100%; border-radius:1px;
+  transition:width 1.3s cubic-bezier(0.4,0,0.2,1);
+}
+.end-midline {
+  position:absolute; top:-5px; bottom:-5px;
+  left:50%; width:2px;
+  background:rgba(255,255,255,0.18);
+  transform:translateX(-50%); z-index:2;
+}
+.end-val {
+  font-family:'Space Mono',monospace;
+  font-size:13px; font-weight:700; text-align:right;
+}
+
+.verdict-wrap {
+  border:1px solid var(--colour-border-bright);
+  background:var(--colour-surface); padding:clamp(20px,3vh,32px);
+  position:relative; margin-bottom:28px;
+}
+.verdict-wrap::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg, var(--colour-accent-red), var(--colour-accent-cyan), var(--colour-accent-lime));
+}
+.verdict-eyebrow {
+  font-family:'Space Mono',monospace; font-size:9px;
+  letter-spacing:0.4em; text-transform:uppercase;
+  color:var(--colour-text-muted); display:block; margin-bottom:12px;
+}
+.verdict-headline {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(26px,4vw,52px);
+  letter-spacing:0.04em; color:var(--colour-text);
+  margin-bottom:14px; line-height:1;
+}
+.verdict-story {
+  font-family:'Lora',serif; font-style:italic;
+  font-size:clamp(13px,1.8vw,15px); line-height:1.85;
+  color:#8aa0b0; max-width:680px;
+}
+
+.btn-replay {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(16px,2.5vw,20px); letter-spacing:0.14em;
+  color:var(--colour-background); background:var(--colour-accent-lime);
+  border:none; padding:16px clamp(32px,5vw,56px); cursor:pointer;
+  clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);
+  transition:all 0.2s; display:block; margin:0 auto;
+}
+.btn-replay:hover { background:#fff; transform:scale(1.03); }
+
+@keyframes yearPop {
+  0%,100% { transform:scale(1); }
+  50% { transform:scale(1.18); color:#fff; }
+}
+.year-pop { animation:yearPop 0.5s ease; }
+</style>
+</head>
+<body>
+<div class="noise-overlay"></div>
+
+<!-- LANDING -->
+<div class="page active" id="landing">
+  <div class="hex-grid"></div>
+  <div class="landing-inner">
+    <div class="landing-eyebrow" id="landingEyebrow"></div>
+    <div class="landing-title">
+      <span id="landingTitleMain"></span>
+      <span class="sub" id="landingTitleSub"></span>
+    </div>
+    <div class="landing-rule"></div>
+    <div class="landing-tagline" id="landingTagline"></div>
+    <button class="btn-primary" id="landingPlayBtn" onclick="goToPathSelect()"></button>
+  </div>
+</div>
+
+<!-- PATH SELECT -->
+<div class="page" id="pathselect">
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:clamp(24px,5vh,48px) 24px;position:relative;z-index:1;">
+    <div class="path-header">
+      <span class="path-eyebrow" id="pathEyebrow"></span>
+      <div class="path-heading" id="pathHeading"></div>
+      <div class="path-sub" id="pathSub"></div>
+    </div>
+    <div class="paths-grid" id="pathsGrid"></div>
+  </div>
+</div>
+
+<!-- GAME -->
+<div class="page" id="game">
+  <div class="game-topbar">
+    <div class="game-wordmark" id="gameWordmark"></div>
+    <div class="year-block">
+      <span class="year-lbl" id="gameYearLabel"></span>
+      <div class="year-val" id="yearVal">2030</div>
+    </div>
+    <div>
+      <div class="path-badge" id="pathBadge"></div>
+      <span class="round-lbl" id="roundLbl">Round 1 / 5</span>
+    </div>
+  </div>
+
+  <div class="game-body">
+    <div class="stats-side" id="statsSide"></div>
+    <div class="scenario-main" id="scenarioMain"></div>
+  </div>
+
+  <div class="game-bottom">
+    <div class="bottom-left">
+      <button class="btn-undo" id="undoBtn" onclick="undoLastChoice()">↩ &nbsp;UNDO LAST CHOICE</button>
+    </div>
+    <button class="btn-end-early" id="endEarlyBtn" onclick="endGame(true)"></button>
+  </div>
+</div>
+
+<!-- END PAGE -->
+<div class="page" id="endpage">
+  <div class="end-wrap">
+    <div class="end-header">
+      <span class="end-eyebrow" id="endEyebrow"></span>
+      <div class="end-title" id="endTitle"></div>
+      <div class="end-year" id="endYear">Victoria · 2090</div>
+    </div>
+    <div class="end-bars" id="endBars"></div>
+    <div class="verdict-wrap">
+      <span class="verdict-eyebrow" id="verdictEyebrow"></span>
+      <div class="verdict-headline" id="verdictHead">—</div>
+      <div class="verdict-story" id="verdictStory">—</div>
+    </div>
+    <button class="btn-replay" id="playAgainBtn" onclick="resetAll()"></button>
+  </div>
+</div>
+
+<!-- IMPACT OVERLAY -->
+<div class="overlay" id="impactOverlay">
+  <div class="overlay-box">
+    <span class="ol-tag" id="overlayTag"></span>
+    <div class="ol-title" id="olTitle">—</div>
+    <div class="ol-narrative" id="olNarrative"></div>
+    <div class="ol-divider">stat changes</div>
+    <div class="ol-impact-row" id="olImpactRow"></div>
+    <button class="ol-continue" id="olContinueBtn" onclick="continueFromOverlay()"></button>
+  </div>
+</div>
+
+<script>
+// ================================================================
+// GAME LOGIC
+// ================================================================
+
+const TOTAL_ROUNDS = 5;
+
+function applyUIText() {
+  document.title                                           = UI_TEXT.pageTitle;
+  document.getElementById('landingEyebrow').textContent    = UI_TEXT.landingEyebrow;
+  document.getElementById('landingTitleMain').innerHTML    = UI_TEXT.landingTitleMain;
+  document.getElementById('landingTitleSub').textContent   = UI_TEXT.landingTitleSub;
+  document.getElementById('landingTagline').textContent    = UI_TEXT.landingTagline;
+  document.getElementById('landingPlayBtn').innerHTML      = UI_TEXT.landingPlayButton;
+  document.getElementById('pathEyebrow').textContent       = UI_TEXT.pathEyebrow;
+  document.getElementById('pathHeading').innerHTML         = UI_TEXT.pathHeading;
+  document.getElementById('pathSub').textContent           = UI_TEXT.pathSubtitle;
+  document.getElementById('gameWordmark').textContent      = UI_TEXT.gameWordmark;
+  document.getElementById('gameYearLabel').textContent     = UI_TEXT.gameYearLabel;
+  document.getElementById('endEarlyBtn').innerHTML         = UI_TEXT.endEarlyButton;
+  document.getElementById('overlayTag').textContent        = UI_TEXT.overlayTag;
+  document.getElementById('olContinueBtn').textContent     = UI_TEXT.overlayContinueBtn;
+  document.getElementById('endEyebrow').textContent        = UI_TEXT.endEyebrow;
+  document.getElementById('endTitle').textContent          = UI_TEXT.endTitle;
+  document.getElementById('verdictEyebrow').textContent    = UI_TEXT.verdictEyebrow;
+  document.getElementById('playAgainBtn').innerHTML        = UI_TEXT.playAgainButton;
+}
+
+function buildPathCards() {
+  const grid = document.getElementById('pathsGrid');
+  const pathKeys = ['technology', 'environment', 'government'];
+  grid.innerHTML = pathKeys.map(key => {
+    const p = ALL_STORY_PATHS[key];
+    return `
+      <div class="path-card ${key}" onclick="selectPath('${key}')">
+        <span class="path-icon">${p.PATH_CARD_ICON}</span>
+        <div class="path-name">${p.PATH_CARD_NAME}</div>
+        <div class="path-flavor">${p.PATH_CARD_FLAVOR}</div>
+        <div class="path-tag">${p.PATH_SUBTITLE}</div>
+      </div>`;
+  }).join('');
+}
+
+const INDICATOR_CONFIG = [
+  { internalKey: 'economy',     get displayLabel() { return UI_TEXT.statLabels.economy;     }, cssColor: 'var(--colour-economy)'     },
+  { internalKey: 'healthcare',  get displayLabel() { return UI_TEXT.statLabels.healthcare;  }, cssColor: 'var(--colour-healthcare)'  },
+  { internalKey: 'education',   get displayLabel() { return UI_TEXT.statLabels.education;   }, cssColor: 'var(--colour-education)'   },
+  { internalKey: 'social',      get displayLabel() { return UI_TEXT.statLabels.social;      }, cssColor: 'var(--colour-social)'      },
+  { internalKey: 'environment', get displayLabel() { return UI_TEXT.statLabels.environment; }, cssColor: 'var(--colour-environment)' },
+];
+
+// ── GAME STATE ───────────────────────────────────────────────────
+let gameState = {
+  currentStats:      { economy: 50, healthcare: 50, education: 50, social: 50, environment: 50 },
+  currentYear:       2030,
+  currentRound:      0,
+  chosenPath:        null,
+  lastOptionChosen:  -1,
+  pendingStatChanges: null,
+  pendingNextRound:   null,
+  pendingChoiceIndex: null,
+  // Undo history — each entry stores the complete state before a choice was made
+  history: [],
+};
+
+let sessionChoices = [];
+
+// ── PAGE NAVIGATION ──────────────────────────────────────────────
+function showPage(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(pageId).classList.add('active');
+}
+
+function goToPathSelect() { showPage('pathselect'); }
+
+// ── PATH SELECTION ────────────────────────────────────────────────
+function selectPath(pathKey) {
+  gameState.chosenPath       = pathKey;
+  gameState.currentStats     = { economy: 50, healthcare: 50, education: 50, social: 50, environment: 50 };
+  gameState.currentYear      = 2030;
+  gameState.currentRound     = 0;
+  gameState.lastOptionChosen = -1;
+  gameState.history          = [];
+  sessionChoices = [];
+  showPage('game');
+  setupGameHeader();
+  renderStatBars();
+  renderCurrentEvent();
+  updateUndoButton();
+}
+
+function resetAll() {
+  gameState = {
+    currentStats:      { economy: 50, healthcare: 50, education: 50, social: 50, environment: 50 },
+    currentYear:       2030,
+    currentRound:      0,
+    chosenPath:        null,
+    lastOptionChosen:  -1,
+    pendingStatChanges: null,
+    pendingNextRound:   null,
+    pendingChoiceIndex: null,
+    history:           [],
+  };
+  showPage('landing');
+}
+
+// ── UNDO ─────────────────────────────────────────────────────────
+function updateUndoButton() {
+  const btn = document.getElementById('undoBtn');
+  if (gameState.history.length > 0) {
+    btn.classList.add('visible');
+  } else {
+    btn.classList.remove('visible');
+  }
+}
+
+function undoLastChoice() {
+  if (gameState.history.length === 0) return;
+  // Close overlay if open
+  document.getElementById('impactOverlay').classList.remove('show');
+  // Restore the previous state snapshot
+  const prev = gameState.history.pop();
+  gameState.currentStats     = { ...prev.currentStats };
+  gameState.currentYear      = prev.currentYear;
+  gameState.currentRound     = prev.currentRound;
+  gameState.lastOptionChosen = prev.lastOptionChosen;
+  gameState.pendingStatChanges = null;
+  gameState.pendingNextRound   = null;
+  gameState.pendingChoiceIndex = null;
+  // Also undo the session choice record
+  sessionChoices.pop();
+  renderStatBars();
+  renderCurrentEvent();
+  updateUndoButton();
+}
+
+// ── GAME HEADER ──────────────────────────────────────────────────
+function setupGameHeader() {
+  const pathData = ALL_STORY_PATHS[gameState.chosenPath];
+  const badgeEl  = document.getElementById('pathBadge');
+  badgeEl.textContent   = pathData.PATH_SUBTITLE;
+  badgeEl.style.color   = pathData.PATH_COLOUR;
+  badgeEl.style.opacity = '0.8';
+}
+
+function updateHeader() {
+  const yearEl = document.getElementById('yearVal');
+  yearEl.textContent = gameState.currentYear;
+  yearEl.classList.remove('year-pop');
+  void yearEl.offsetWidth;
+  yearEl.classList.add('year-pop');
+  document.getElementById('roundLbl').textContent =
+    UI_TEXT.roundFormat.replace('{round}', gameState.currentRound + 1).replace('{total}', TOTAL_ROUNDS);
+}
+
+// ── STAT BARS (SIDEBAR) ──────────────────────────────────────────
+function renderStatBars() {
+  const sidebarEl = document.getElementById('statsSide');
+  sidebarEl.innerHTML = `<div class="stats-label">${UI_TEXT.sidebarLabel}</div>`;
+  INDICATOR_CONFIG.forEach(indicator => {
+    const currentValue = clampValue(gameState.currentStats[indicator.internalKey]);
+    sidebarEl.innerHTML += `
+      <div class="stat-block">
+        <div class="stat-row">
+          <span class="stat-name-txt ${indicator.internalKey}">${indicator.displayLabel}</span>
+          <span class="stat-num ${indicator.internalKey}" id="snum-${indicator.internalKey}">${Math.round(currentValue)}</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill ${indicator.internalKey}" id="bfill-${indicator.internalKey}" style="width:${currentValue}%"></div>
+          <div class="bar-midline"></div>
+        </div>
+      </div>`;
+  });
+}
+
+function animateStatBars(statChanges) {
+  INDICATOR_CONFIG.forEach(indicator => {
+    const change = statChanges[indicator.internalKey] || 0;
+    if (!change) return;
+    const newValue = clampValue(gameState.currentStats[indicator.internalKey] + change);
+    gameState.currentStats[indicator.internalKey] = newValue;
+    setTimeout(() => {
+      const barFill  = document.getElementById(`bfill-${indicator.internalKey}`);
+      const numLabel = document.getElementById(`snum-${indicator.internalKey}`);
+      if (barFill)  barFill.style.width  = newValue + '%';
+      if (numLabel) numLabel.textContent = Math.round(newValue);
+    }, 150);
+  });
+}
+
+function clampValue(value) { return Math.max(0, Math.min(100, value)); }
+
+// ── EVENT DISPLAY ────────────────────────────────────────────────
+function renderCurrentEvent() {
+  updateHeader();
+  const pathData     = ALL_STORY_PATHS[gameState.chosenPath];
+  const currentEvent = pathData.EVENTS[gameState.currentRound];
+
+  let openingDescription;
+  if (gameState.currentRound === 0) {
+    openingDescription = currentEvent.DEFAULT_INTRO;
+  } else {
+    const previousEvent = pathData.EVENTS[gameState.currentRound - 1];
+    const chosenOption  = previousEvent.OPTIONS[gameState.lastOptionChosen];
+    openingDescription  = chosenOption.CONSEQUENCE_INTRO || currentEvent.DEFAULT_INTRO;
+  }
+
+  const mainPanel = document.getElementById('scenarioMain');
+  const eventTag = UI_TEXT.eventTagFormat
+    .replace('{round}', gameState.currentRound + 1)
+    .replace('{total}', TOTAL_ROUNDS)
+    .replace('{path}', pathData.PATH_TITLE);
+
+  mainPanel.innerHTML = `
+    <div class="event-tag">${eventTag}</div>
+    <div class="event-title">${currentEvent.EVENT_TITLE}</div>
+    <div class="event-desc">${openingDescription}</div>
+    <div class="choose-lbl">${UI_TEXT.chooseLabel}</div>
+    <div class="options-row" id="optionsRow">
+      ${currentEvent.OPTIONS.map((option, index) => buildOptionCard(option, index)).join('')}
+    </div>
+  `;
+}
+
+function buildOptionCard(option, optionIndex) {
+  const effectEntries = Object.entries(option.STAT_EFFECTS);
+  const risingStats   = effectEntries.filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]);
+  const fallingStats  = effectEntries.filter(([, v]) => v < 0).sort((a, b) => a[1] - b[1]);
+  const topRising     = risingStats[0]  || null;
+  const topFalling    = fallingStats[0] || null;
+  const risingLabel   = topRising  ? getIndicatorLabel(topRising[0])  : null;
+  const fallingLabel  = topFalling ? getIndicatorLabel(topFalling[0]) : null;
+  const revealedKeys  = new Set([topRising?.[0], topFalling?.[0]].filter(Boolean));
+  const unknownIndicators = INDICATOR_CONFIG.filter(ind => !revealedKeys.has(ind.internalKey));
+
+  const unknownPillsHtml = unknownIndicators.map(ind =>
+    `<span class="hint-unknown" style="border-color:${ind.cssColor}22; color:${ind.cssColor}99;">? ${ind.displayLabel}</span>`
+  ).join('');
+
+  const impactForecastHtml = `
+    <div class="opt-hint-wrap">
+      <div class="opt-hint-known">
+        ${risingLabel  ? `<span class="hint-up">↑ ${risingLabel}</span>`   : ''}
+        ${fallingLabel ? `<span class="hint-down">↓ ${fallingLabel}</span>` : ''}
+      </div>
+      <div class="opt-hint-unknown">${unknownPillsHtml}</div>
+      <span class="hint-label">${UI_TEXT.impactForecastLabel}</span>
+    </div>`;
+
+  const optionLetter = UI_TEXT.optionLetterFormat.replace('{letter}', String.fromCharCode(65 + optionIndex));
+  return `
+    <div class="opt-card" onclick="chooseOption(${optionIndex})">
+      <div class="opt-letter">${optionLetter}</div>
+      <div class="opt-title">${option.OPTION_NAME}</div>
+      <div class="opt-desc">${option.OPTION_DESCRIPTION}</div>
+      ${impactForecastHtml}
+    </div>`;
+}
+
+function getIndicatorLabel(internalKey) {
+  const match = INDICATOR_CONFIG.find(ind => ind.internalKey === internalKey);
+  return match ? match.displayLabel : internalKey;
+}
+
+function chooseOption(optionIndex) {
+  document.querySelectorAll('.opt-card').forEach(card => card.classList.add('disabled'));
+  const currentEvent = ALL_STORY_PATHS[gameState.chosenPath].EVENTS[gameState.currentRound];
+  const chosenOption = currentEvent.OPTIONS[optionIndex];
+
+  // Save state snapshot for undo BEFORE applying any changes
+  gameState.history.push({
+    currentStats:      { ...gameState.currentStats },
+    currentYear:       gameState.currentYear,
+    currentRound:      gameState.currentRound,
+    lastOptionChosen:  gameState.lastOptionChosen,
+  });
+
+  gameState.pendingStatChanges  = chosenOption.STAT_EFFECTS;
+  gameState.pendingNextRound    = gameState.currentRound + 1;
+  gameState.pendingChoiceIndex  = optionIndex;
+  recordChoice(optionIndex);
+  updateUndoButton();
+  showImpactOverlay(chosenOption.OPTION_NAME, chosenOption.NARRATIVE_TITLE, chosenOption.NARRATIVE, chosenOption.STAT_EFFECTS);
+}
+
+// ── IMPACT OVERLAY ───────────────────────────────────────────────
+function showImpactOverlay(chosenOptionLabel, narrativeTitle, narrativeText, statEffects) {
+  document.getElementById('olTitle').textContent   = narrativeTitle || chosenOptionLabel;
+  document.getElementById('olNarrative').textContent = narrativeText || '';
+
+  const allChanges = Object.entries(statEffects);
+  const rising     = allChanges.filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]);
+  const falling    = allChanges.filter(([, v]) => v < 0).sort((a, b) => a[1] - b[1]);
+  const topRising  = rising[0]  || null;
+  const topFalling = falling[0] || null;
+  const knownStats = [topRising, topFalling].filter(Boolean);
+  const knownKeys  = new Set(knownStats.map(([k]) => k));
+  const unknownStats = allChanges.filter(([k]) => !knownKeys.has(k));
+
+  const impactRowEl = document.getElementById('olImpactRow');
+  impactRowEl.innerHTML = '';
+
+  function buildStatRow(statKey, statValue, isUnknown) {
+    const isRising  = statValue > 0;
+    const isZero    = statValue === 0;
+    const indicator = INDICATOR_CONFIG.find(ind => ind.internalKey === statKey);
+    let arrowHtml;
+    if (isZero) {
+      arrowHtml = `<span class="impact-arrow neutral">${UI_TEXT.overlayNoChange}</span>`;
+    } else {
+      arrowHtml = `<span class="impact-arrow ${isRising ? 'up' : 'down'}">${isRising ? UI_TEXT.overlayIncreasing : UI_TEXT.overlayDecreasing}</span>`;
+    }
+    const unknownTag = isUnknown ? `<span class="impact-unknown-tag">${UI_TEXT.hiddenEffectTag}</span>` : '';
+    impactRowEl.innerHTML += `
+      <div class="impact-item ${isUnknown ? 'impact-unknown' : ''}" id="imp-${statKey}">
+        <div class="impact-header">
+          <span class="impact-name" style="color:${indicator.cssColor}">${indicator.displayLabel} ${unknownTag}</span>
+          ${arrowHtml}
+        </div>
+        ${!isZero ? `
+        <div class="impact-bar-track">
+          <div class="impact-bar-fill ${isRising ? 'up' : 'down'}" id="impfill-${statKey}" style="width:0%"></div>
+        </div>` : ''}
+      </div>`;
+  }
+
+  knownStats.forEach(([key, val]) => buildStatRow(key, val, false));
+  unknownStats.forEach(([key, val]) => buildStatRow(key, val, true));
+
+  const continueBtn = document.getElementById('olContinueBtn');
+  continueBtn.classList.remove('show');
+  document.getElementById('impactOverlay').classList.add('show');
+
+  knownStats.forEach(([statKey, statVal], i) => {
+    setTimeout(() => {
+      const rowEl = document.getElementById(`imp-${statKey}`);
+      if (rowEl) rowEl.classList.add('show');
+      setTimeout(() => {
+        const fillEl = document.getElementById(`impfill-${statKey}`);
+        if (fillEl) fillEl.style.width = Math.min(100, Math.abs(statVal) / 25 * 100) + '%';
+      }, 200);
+    }, i * 240 + 80);
+  });
+
+  const unknownStartDelay = knownStats.length * 240 + 280;
+  setTimeout(() => {
+    const divider = document.createElement('div');
+    divider.className = 'impact-divider';
+    divider.textContent = UI_TEXT.otherEffectsLabel;
+    const firstUnknownEl = document.getElementById(`imp-${unknownStats[0]?.[0]}`);
+    if (firstUnknownEl) impactRowEl.insertBefore(divider, firstUnknownEl);
+  }, unknownStartDelay - 60);
+
+  unknownStats.forEach(([statKey, statVal], i) => {
+    setTimeout(() => {
+      const rowEl = document.getElementById(`imp-${statKey}`);
+      if (rowEl) rowEl.classList.add('show');
+      setTimeout(() => {
+        const fillEl = document.getElementById(`impfill-${statKey}`);
+        if (fillEl) fillEl.style.width = Math.min(100, Math.abs(statVal) / 25 * 100) + '%';
+      }, 200);
+    }, unknownStartDelay + i * 200);
+  });
+
+  const totalDelay = unknownStartDelay + unknownStats.length * 200 + 400;
+  setTimeout(() => continueBtn.classList.add('show'), totalDelay);
+}
+
+function continueFromOverlay() {
+  document.getElementById('impactOverlay').classList.remove('show');
+  animateStatBars(gameState.pendingStatChanges);
+  gameState.lastOptionChosen = gameState.pendingChoiceIndex;
+  gameState.currentRound     = gameState.pendingNextRound;
+  gameState.currentYear     += 10;
+  setTimeout(() => {
+    if (gameState.currentRound >= TOTAL_ROUNDS) {
+      endGame(false);
+    } else {
+      renderCurrentEvent();
+    }
+  }, 600);
+}
+
+// ── END GAME / RESULTS SCREEN ────────────────────────────────────
+function endGame(endedEarly = false) {
+  showPage('endpage');
+  document.getElementById('endYear').textContent = UI_TEXT.endLocationYear
+    .replace('{location}', UI_TEXT.endLocation)
+    .replace('{year}', gameState.currentYear);
+
+  const barsContainer = document.getElementById('endBars');
+  barsContainer.innerHTML = '';
+  INDICATOR_CONFIG.forEach(indicator => {
+    const finalValue = clampValue(gameState.currentStats[indicator.internalKey]);
+    barsContainer.innerHTML += `
+      <div class="end-stat-row">
+        <div class="end-stat-name" style="color:${indicator.cssColor}">${indicator.displayLabel}</div>
+        <div class="end-track">
+          <div class="end-fill" id="ef-${indicator.internalKey}" style="width:0%; background:${indicator.cssColor}; opacity:0.75;"></div>
+          <div class="end-midline"></div>
+        </div>
+        <div class="end-val" style="color:${indicator.cssColor}">${Math.round(finalValue)}</div>
+      </div>`;
+  });
+
+  setTimeout(() => {
+    INDICATOR_CONFIG.forEach(indicator => {
+      const barEl = document.getElementById(`ef-${indicator.internalKey}`);
+      if (barEl) barEl.style.width = clampValue(gameState.currentStats[indicator.internalKey]) + '%';
+    });
+  }, 120);
+
+  const verdictTitle = buildVerdictText();
+  pushSessionToFirebase(endedEarly, endedEarly ? null : verdictTitle);
+}
+
+function buildVerdictText() {
+  const s              = gameState.currentStats;
+  const economy        = s.economy;
+  const environment    = s.environment;
+  const social         = s.social;
+  const healthcare     = s.healthcare;
+  const education      = s.education;
+  const allValues      = [economy, environment, social, healthcare, education];
+  const overallAverage = allValues.reduce((sum, v) => sum + v, 0) / allValues.length;
+
+  let verdict;
+  if      (economy > 65 && environment < 40)        verdict = UI_TEXT.verdicts.gildedWasteland;
+  else if (environment > 65 && economy < 40)        verdict = UI_TEXT.verdicts.beautifulStruggle;
+  else if (social > 65 && healthcare < 40)          verdict = UI_TEXT.verdicts.fracturedCommons;
+  else if (education > 65 && social < 40)           verdict = UI_TEXT.verdicts.educatedDivide;
+  else if (overallAverage < 38)                     verdict = UI_TEXT.verdicts.weightOfConsequence;
+  else if (overallAverage > 68)                     verdict = UI_TEXT.verdicts.stateTransformed;
+  else if (environment < 42 && overallAverage > 54) verdict = UI_TEXT.verdicts.prosperityAtAPrice;
+  else if (social > 60 && economy < 45)             verdict = UI_TEXT.verdicts.richInEverything;
+  else                                              verdict = UI_TEXT.verdicts.longMiddleGround;
+
+  document.getElementById('verdictHead').textContent  = verdict.title;
+  document.getElementById('verdictStory').textContent = verdict.narrative;
+  return verdict.title;
+}
+
+// ── FIREBASE ANALYTICS ───────────────────────────────────────────
+const FIREBASE_DB_URL = 'https://emeregencey-game-default-rtdb.firebaseio.com/';
+
+function recordChoice(optionIndex) {
+  const pathData     = ALL_STORY_PATHS[gameState.chosenPath];
+  const currentEvent = pathData.EVENTS[gameState.currentRound];
+  const chosenOption = currentEvent.OPTIONS[optionIndex];
+  sessionChoices.push({
+    round:       gameState.currentRound + 1,
+    eventTitle:  currentEvent.EVENT_TITLE,
+    optionIndex: optionIndex,
+    optionName:  chosenOption.OPTION_NAME,
+  });
+}
+
+function pushSessionToFirebase(endedEarly, verdictTitle) {
+  const sessionId = Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  const now = new Date();
+  const pad = n => String(n).padStart(2, '0');
+  const dateStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+  const timeStr = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+  const record = {
+    sessionId, timestamp: now.toISOString(), date: dateStr, time: timeStr,
+    dayOfWeek: ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][now.getDay()],
+    path: gameState.chosenPath,
+    completedRounds: gameState.currentRound,
+    endedEarly, verdictTitle: verdictTitle || null,
+    choices: sessionChoices,
+    finalStats: { ...gameState.currentStats },
+  };
+  fetch(FIREBASE_DB_URL + 'sessions.json', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(record),
+  }).catch(err => console.warn('Firebase write failed:', err));
+}
+
+// ── STARTUP ──────────────────────────────────────────────────────
+applyUIText();
+buildPathCards();
+showPage('landing');
+</script>
+</body>
+</html>
