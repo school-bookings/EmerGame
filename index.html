@@ -642,6 +642,60 @@ body {
   opacity: 0.6;
 }
 
+/* SESSION ID GATE */
+.pw-overlay {
+  position:fixed; inset:0; z-index:9999;
+  background:var(--colour-background);
+  display:flex; align-items:center; justify-content:center;
+  flex-direction:column; gap:0;
+}
+.pw-overlay.hidden { display:none; }
+.pw-box {
+  text-align:center; padding:48px 40px;
+  background:var(--colour-surface);
+  border:1px solid var(--colour-border-bright);
+  width:min(420px,90vw); position:relative;
+}
+.pw-box::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg, var(--colour-accent-lime), var(--colour-accent-cyan));
+}
+.pw-eyebrow {
+  font-family:'Space Mono',monospace; font-size:9px;
+  letter-spacing:0.4em; text-transform:uppercase;
+  color:var(--colour-text-muted); display:block; margin-bottom:20px;
+}
+.pw-title {
+  font-family:'Bebas Neue',sans-serif; font-size:42px;
+  letter-spacing:0.06em; color:var(--colour-text);
+  line-height:1; margin-bottom:8px;
+}
+.pw-sub {
+  font-family:'Lora',serif; font-style:italic; font-size:13px;
+  color:var(--colour-text-muted); margin-bottom:28px; line-height:1.6;
+}
+.pw-input-wrap { position:relative; margin-bottom:16px; }
+.pw-input {
+  width:100%; background:var(--colour-background);
+  border:1px solid var(--colour-border-bright);
+  color:var(--colour-text); font-family:'Space Mono',monospace;
+  font-size:18px; letter-spacing:0.25em; text-align:center;
+  padding:14px 16px; outline:none; text-transform:uppercase;
+  transition:border-color 0.2s;
+}
+.pw-input:focus { border-color:var(--colour-accent-lime); }
+.pw-input::placeholder { color:var(--colour-text-muted); font-size:12px; letter-spacing:0.15em; text-transform:none; }
+.pw-error {
+  font-family:'Space Mono',monospace; font-size:9px;
+  color:var(--colour-accent-red); letter-spacing:0.1em;
+  margin-bottom:16px; display:none; min-height:16px;
+}
+.pw-hint {
+  font-family:'Space Mono',monospace; font-size:8px;
+  color:var(--colour-text-muted); letter-spacing:0.1em;
+  margin-top:14px; opacity:0.6;
+}
+
 /* LANDING */
 #landing {
   flex: 1;
@@ -1247,6 +1301,67 @@ body {
 }
 .btn-replay:hover { background:#fff; transform:scale(1.03); }
 
+/* SESSION ID BUTTON */
+.session-id-btn {
+  font-family:'Space Mono',monospace; font-size:9px;
+  letter-spacing:0.2em; text-transform:uppercase;
+  color:var(--colour-accent-lime); background:transparent;
+  border:1px solid rgba(212,245,66,0.35);
+  padding:4px 10px; cursor:pointer; transition:all 0.2s;
+}
+.session-id-btn:hover { background:rgba(212,245,66,0.08); border-color:var(--colour-accent-lime); }
+
+/* SESSION CHANGE MODAL */
+.session-modal {
+  position:fixed; inset:0; z-index:500;
+  background:rgba(4,8,14,0.85);
+  display:flex; align-items:center; justify-content:center;
+  opacity:0; pointer-events:none; transition:opacity 0.25s;
+  backdrop-filter:blur(4px); padding:16px;
+}
+.session-modal.show { opacity:1; pointer-events:all; }
+.session-modal-box {
+  background:var(--colour-surface); border:1px solid var(--colour-border-bright);
+  padding:32px; width:min(400px,95vw); position:relative; text-align:center;
+}
+.session-modal-box::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg,var(--colour-accent-lime),var(--colour-accent-cyan));
+}
+.session-modal-title {
+  font-family:'Bebas Neue',sans-serif; font-size:28px;
+  letter-spacing:0.06em; color:var(--colour-text); margin-bottom:6px;
+}
+.session-modal-sub {
+  font-family:'Lora',serif; font-style:italic; font-size:12px;
+  color:var(--colour-text-muted); margin-bottom:20px; line-height:1.6;
+}
+.session-modal-current {
+  font-family:'Space Mono',monospace; font-size:10px;
+  letter-spacing:0.2em; color:var(--colour-accent-lime);
+  margin-bottom:16px; display:block;
+}
+.session-modal-input {
+  width:100%; background:var(--colour-background);
+  border:1px solid var(--colour-border-bright);
+  color:var(--colour-text); font-family:'Space Mono',monospace;
+  font-size:16px; letter-spacing:0.2em; text-align:center;
+  padding:12px 14px; outline:none; text-transform:uppercase;
+  transition:border-color 0.2s; margin-bottom:14px; display:block;
+}
+.session-modal-input:focus { border-color:var(--colour-accent-lime); }
+.session-modal-input::placeholder { color:var(--colour-text-muted); text-transform:none; font-size:12px; letter-spacing:0.1em; }
+.session-modal-btns { display:flex; gap:10px; }
+.session-modal-btns .btn-primary { flex:1; padding:12px; }
+.session-modal-cancel {
+  font-family:'Space Mono',monospace; font-size:10px;
+  letter-spacing:0.12em; text-transform:uppercase;
+  color:var(--colour-text-muted); background:transparent;
+  border:1px solid var(--colour-border); padding:12px 20px;
+  cursor:pointer; transition:all 0.2s;
+}
+.session-modal-cancel:hover { border-color:var(--colour-border-bright); color:var(--colour-text); }
+
 @keyframes yearPop {
   0%,100% { transform:scale(1); }
   50% { transform:scale(1.18); color:#fff; }
@@ -1257,9 +1372,27 @@ body {
 <body>
 <div class="noise-overlay"></div>
 
+<!-- PASSWORD GATE -->
+<div class="pw-overlay" id="pwOverlay">
+  <div class="pw-box">
+    <span class="pw-eyebrow">EMERGENCE[Y] · THE GAME</span>
+    <div class="pw-title">SESSION ID</div>
+    <div class="pw-sub">Enter the session ID provided by your facilitator to begin.</div>
+    <div class="pw-input-wrap">
+      <input class="pw-input" id="pwInput" type="text" placeholder="Enter session ID…" maxlength="20" autocomplete="off" spellcheck="false">
+    </div>
+    <div class="pw-error" id="pwError">Please enter a session ID to continue.</div>
+    <button class="btn-primary" onclick="submitPassword()" style="width:100%">ENTER →</button>
+    <div class="pw-hint">Ask your facilitator if you don't have a session ID</div>
+  </div>
+</div>
+
 <!-- LANDING -->
 <div class="page active" id="landing">
   <div class="hex-grid"></div>
+  <div style="position:absolute;top:14px;right:clamp(16px,3vw,32px);z-index:10">
+    <button class="session-id-btn" onclick="openSessionChange()" data-session-btn title="Change session ID">ID: —</button>
+  </div>
   <div class="landing-inner">
     <div class="landing-eyebrow" id="landingEyebrow"></div>
     <div class="landing-title">
@@ -1275,6 +1408,9 @@ body {
 <!-- PATH SELECT -->
 <div class="page" id="pathselect">
   <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:clamp(24px,5vh,48px) 24px;position:relative;z-index:1;">
+    <div style="position:absolute;top:14px;right:clamp(16px,3vw,32px)">
+      <button class="session-id-btn" onclick="openSessionChange()" data-session-btn title="Change session ID">ID: —</button>
+    </div>
     <div class="path-header">
       <span class="path-eyebrow" id="pathEyebrow"></span>
       <div class="path-heading" id="pathHeading"></div>
@@ -1292,9 +1428,10 @@ body {
       <span class="year-lbl" id="gameYearLabel"></span>
       <div class="year-val" id="yearVal">2030</div>
     </div>
-    <div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
       <div class="path-badge" id="pathBadge"></div>
       <span class="round-lbl" id="roundLbl">Round 1 / 5</span>
+      <button class="session-id-btn" onclick="openSessionChange()" data-session-btn title="Change session ID">ID: —</button>
     </div>
   </div>
 
@@ -1313,6 +1450,9 @@ body {
 
 <!-- END PAGE -->
 <div class="page" id="endpage">
+  <div style="position:absolute;top:14px;right:clamp(16px,3vw,32px);z-index:10">
+    <button class="session-id-btn" onclick="openSessionChange()" data-session-btn title="Change session ID">ID: —</button>
+  </div>
   <div class="end-wrap">
     <div class="end-header">
       <span class="end-eyebrow" id="endEyebrow"></span>
@@ -1329,6 +1469,20 @@ body {
   </div>
 </div>
 
+<!-- SESSION CHANGE MODAL -->
+<div class="session-modal" id="sessionModal">
+  <div class="session-modal-box">
+    <div class="session-modal-title">CHANGE SESSION ID</div>
+    <div class="session-modal-sub">Update your session ID. This will apply to any future data recorded.</div>
+    <span class="session-modal-current" id="sessionModalCurrent">Current ID: —</span>
+    <input class="session-modal-input" id="sessionModalInput" type="text" placeholder="New session ID…" maxlength="20" autocomplete="off" spellcheck="false">
+    <div class="session-modal-btns">
+      <button class="session-modal-cancel" onclick="closeSessionChange()">CANCEL</button>
+      <button class="btn-primary" onclick="confirmSessionChange()">UPDATE →</button>
+    </div>
+  </div>
+</div>
+
 <!-- IMPACT OVERLAY -->
 <div class="overlay" id="impactOverlay">
   <div class="overlay-box">
@@ -1342,6 +1496,61 @@ body {
 </div>
 
 <script>
+// ── SESSION PASSWORD ─────────────────────────────────────────────
+let sessionPassword = '';
+
+function submitPassword() {
+  const val = document.getElementById('pwInput').value.trim().toUpperCase();
+  if (!val) {
+    document.getElementById('pwError').style.display = 'block';
+    document.getElementById('pwError').textContent = 'Please enter a session ID to continue.';
+    return;
+  }
+  sessionPassword = val;
+  document.getElementById('pwOverlay').classList.add('hidden');
+  updateSessionIdBtns();
+  showPage('landing');
+}
+
+function updateSessionIdBtns() {
+  const label = 'ID: ' + (sessionPassword || '—');
+  document.querySelectorAll('[data-session-btn]').forEach(el => el.textContent = label);
+}
+
+function openSessionChange() {
+  document.getElementById('sessionModalCurrent').textContent = 'Current ID: ' + (sessionPassword || '—');
+  document.getElementById('sessionModalInput').value = '';
+  document.getElementById('sessionModal').classList.add('show');
+  setTimeout(() => document.getElementById('sessionModalInput').focus(), 100);
+}
+
+function closeSessionChange() {
+  document.getElementById('sessionModal').classList.remove('show');
+}
+
+function confirmSessionChange() {
+  const val = document.getElementById('sessionModalInput').value.trim().toUpperCase();
+  if (!val) return;
+  sessionPassword = val;
+  updateSessionIdBtns();
+  closeSessionChange();
+}
+
+document.getElementById('sessionModalInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') confirmSessionChange();
+  if (e.key === 'Escape') closeSessionChange();
+});
+
+// Close modal on backdrop click
+document.getElementById('sessionModal').addEventListener('click', function(e) {
+  if (e.target === this) closeSessionChange();
+});
+
+// Allow Enter key on password input
+document.getElementById('pwInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') submitPassword();
+});
+
 // ================================================================
 // GAME LOGIC
 // ================================================================
@@ -1807,6 +2016,7 @@ function pushSessionToFirebase(endedEarly, verdictTitle) {
   const record = {
     sessionId, timestamp: now.toISOString(), date: dateStr, time: timeStr,
     dayOfWeek: ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][now.getDay()],
+    sessionPassword: sessionPassword || '',
     path: gameState.chosenPath,
     completedRounds: gameState.currentRound,
     endedEarly, verdictTitle: verdictTitle || null,
@@ -1823,7 +2033,8 @@ function pushSessionToFirebase(endedEarly, verdictTitle) {
 // ── STARTUP ──────────────────────────────────────────────────────
 applyUIText();
 buildPathCards();
-showPage('landing');
+// Show password gate first, not landing
+document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
 </script>
 </body>
 </html>
