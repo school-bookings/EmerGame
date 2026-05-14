@@ -702,8 +702,15 @@ function startVoteListener() {
   voteListener.addEventListener('put', e => {
     try {
       const parsed = JSON.parse(e.data);
-      // 'put' delivers the full snapshot — use it directly, no re-fetch needed
-      updateVoteTallies(parsed.data || {});
+      // Only use snapshot directly when it's the full root ("/")
+      // Sub-path puts (e.g. "/voterXYZ") contain a single voter object,
+      // not the full collection — using that directly breaks the tally
+      if (parsed.path === '/') {
+        updateVoteTallies(parsed.data || {});
+      } else {
+        // Partial update — re-fetch the full set
+        fetchAndDisplayVotes();
+      }
     } catch(_) {}
   });
 
