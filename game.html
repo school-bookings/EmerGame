@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+<title>EMERGENCE[Y]: THE GAME</title>
+<link rel="stylesheet" href="styles.css">
+<script src="scenarios.js"></script>
+</head>
+<body>
+<div class="noise-overlay"></div>
+
+<!-- PASSWORD GATE -->
+<div class="pw-overlay" id="pwOverlay">
+  <div class="pw-box">
+    <span class="pw-eyebrow">EMERGENCE[Y] · THE GAME</span>
+    <div class="pw-title">SESSION ID</div>
+    <div class="pw-sub">Enter the session ID provided by your facilitator to begin.</div>
+    <div class="pw-input-wrap">
+      <input class="pw-input" id="pwInput" type="text" placeholder="Enter session ID…" maxlength="20" autocomplete="off" spellcheck="false">
+    </div>
+    <div class="pw-error" id="pwError">Please enter a session ID to continue.</div>
+    <button class="btn-primary" onclick="submitPassword()" style="width:100%">ENTER →</button>
+    <div class="pw-hint">Ask your facilitator if you don't have a session ID</div>
+  </div>
+</div>
+
+<!-- LANDING -->
+<div class="page active" id="landing">
+  <div class="hex-grid"></div>
+  <div style="position:absolute;top:14px;right:clamp(16px,3vw,32px);z-index:10">
+    <button class="session-id-btn" onclick="openSessionChange()" data-session-btn title="Change session ID">ID: —</button>
+  </div>
+  <div class="landing-inner">
+    <div class="landing-eyebrow" id="landingEyebrow"></div>
+    <div class="landing-title">
+      <span id="landingTitleMain"></span>
+      <span class="sub" id="landingTitleSub"></span>
+    </div>
+    <div class="landing-rule"></div>
+    <div class="landing-tagline" id="landingTagline"></div>
+    <button class="btn-primary" id="landingPlayBtn" onclick="goToPathSelect()"></button>
+  </div>
+</div>
+
+<!-- PATH SELECT -->
+<div class="page" id="pathselect">
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:clamp(24px,5vh,48px) 24px;position:relative;z-index:1;">
+    <div style="position:absolute;top:14px;right:clamp(16px,3vw,32px)">
+      <button class="session-id-btn" onclick="openSessionChange()" data-session-btn title="Change session ID">ID: —</button>
+    </div>
+    <div class="path-header">
+      <span class="path-eyebrow" id="pathEyebrow"></span>
+      <div class="path-heading" id="pathHeading"></div>
+      <div class="path-sub" id="pathSub"></div>
+    </div>
+    <div class="paths-grid" id="pathsGrid"></div>
+  </div>
+</div>
+
+<!-- GAME -->
+<div class="page" id="game">
+  <div class="game-topbar">
+    <div class="game-wordmark" id="gameWordmark"></div>
+    <div class="year-block">
+      <span class="year-lbl" id="gameYearLabel"></span>
+      <div class="year-val" id="yearVal">2030</div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+      <div class="path-badge" id="pathBadge"></div>
+      <span class="round-lbl" id="roundLbl">Round 1 / 5</span>
+      <button class="session-id-btn" onclick="openSessionChange()" data-session-btn title="Change session ID">ID: —</button>
+    </div>
+  </div>
+
+  <div class="game-body">
+    <div class="stats-side" id="statsSide"></div>
+    <div class="scenario-main" id="scenarioMain"></div>
+  </div>
+
+  <div class="game-bottom">
+    <div class="bottom-left">
+      <button class="btn-undo" id="undoBtn" onclick="undoLastChoice()">↩ &nbsp;UNDO LAST CHOICE</button>
+    </div>
+    <button class="btn-end-early" id="endEarlyBtn" onclick="endGame(true)"></button>
+  </div>
+</div>
+
+<!-- END PAGE -->
+<div class="page" id="endpage">
+  <div style="position:absolute;top:14px;right:clamp(16px,3vw,32px);z-index:10">
+    <button class="session-id-btn" onclick="openSessionChange()" data-session-btn title="Change session ID">ID: —</button>
+  </div>
+  <div class="end-wrap">
+    <div class="end-header">
+      <span class="end-eyebrow" id="endEyebrow"></span>
+      <div class="end-title" id="endTitle"></div>
+      <div class="end-year" id="endYear">Victoria · 2090</div>
+    </div>
+    <div class="end-bars" id="endBars"></div>
+    <div class="verdict-wrap">
+      <span class="verdict-eyebrow" id="verdictEyebrow"></span>
+      <div class="verdict-headline" id="verdictHead">—</div>
+      <div class="verdict-story" id="verdictStory">—</div>
+    </div>
+    <button class="btn-replay" id="playAgainBtn" onclick="resetAll()"></button>
+  </div>
+</div>
+
+<!-- SESSION CHANGE MODAL -->
+<div class="session-modal" id="sessionModal">
+  <div class="session-modal-box">
+    <div class="session-modal-title">CHANGE SESSION ID</div>
+    <div class="session-modal-sub">Update your session ID. This will apply to any future data recorded.</div>
+    <span class="session-modal-current" id="sessionModalCurrent">Current ID: —</span>
+    <input class="session-modal-input" id="sessionModalInput" type="text" placeholder="New session ID…" maxlength="20" autocomplete="off" spellcheck="false">
+    <div class="session-modal-btns">
+      <button class="session-modal-cancel" onclick="closeSessionChange()">CANCEL</button>
+      <button class="btn-primary" onclick="confirmSessionChange()">UPDATE →</button>
+    </div>
+  </div>
+</div>
+
+<!-- IMPACT OVERLAY -->
+<div class="overlay" id="impactOverlay">
+  <div class="overlay-box">
+    <span class="ol-tag" id="overlayTag"></span>
+    <div class="ol-title" id="olTitle">—</div>
+    <div class="ol-narrative" id="olNarrative"></div>
+    <div class="ol-divider">stat changes</div>
+    <div class="ol-impact-row" id="olImpactRow"></div>
+    <button class="ol-continue" id="olContinueBtn" onclick="continueFromOverlay()"></button>
+  </div>
+</div>
+
+<script>
+// ── SESSION PASSWORD ─────────────────────────────────────────────
+let sessionPassword = '';
+
+function submitPassword() {
+  const val = document.getElementById('pwInput').value.trim().toUpperCase();
+  if (!val) {
+    document.getElementById('pwError').style.display = 'block';
+    document.getElementById('pwError').textContent = 'Please enter a session ID to continue.';
+    return;
+  }
+  sessionPassword = val;
+  document.getElementById('pwOverlay').classList.add('hidden');
+  updateSessionIdBtns();
+  showPage('landing');
+}
+
+function updateSessionIdBtns() {
+  const label = 'ID: ' + (sessionPassword || '—');
+  document.querySelectorAll('[data-session-btn]').forEach(el => el.textContent = label);
+}
+
+function openSessionChange() {
+  document.getElementById('sessionModalCurrent').textContent = 'Current ID: ' + (sessionPassword || '—');
+  document.getElementById('sessionModalInput').value = '';
+  document.getElementById('sessionModal').classList.add('show');
+  setTimeout(() => document.getElementById('sessionModalInput').focus(), 100);
+}
+
+function closeSessionChange() {
+  document.getElementById('sessionModal').classList.remove('show');
+}
+
+function confirmSessionChange() {
+  const val = document.getElementById('sessionModalInput').value.trim().toUpperCase();
+  if (!val) return;
+  sessionPassword = val;
+  updateSessionIdBtns();
+  closeSessionChange();
+  // If a game is active, republish state and restart vote listener for the new session
+  if (gameState && gameState.chosenPath) {
+    publishGameState();
+    startVoteListener();
+  }
+}
+
+document.getElementById('sessionModalInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') confirmSessionChange();
+  if (e.key === 'Escape') closeSessionChange();
+});
+
+// Close modal on backdrop click
+document.getElementById('sessionModal').addEventListener('click', function(e) {
+  if (e.target === this) closeSessionChange();
+});
+
+// Allow Enter key on password input
+document.getElementById('pwInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') submitPassword();
+});
+
+// ================================================================
+// GAME LOGIC
+// ================================================================
+
+const TOTAL_ROUNDS = 5;
+
+function applyUIText() {
+  document.title                                           = UI_TEXT.pageTitle;
+  document.getElementById('landingEyebrow').textContent    = UI_TEXT.landingEyebrow;
+  document.getElementById('landingTitleMain').innerHTML    = UI_TEXT.landingTitleMain;
+  document.getElementById('landingTitleSub').textContent   = UI_TEXT.landingTitleSub;
+  document.getElementById('landingTagline').textContent    = UI_TEXT.landingTagline;
+  document.getElementById('landingPlayBtn').innerHTML      = UI_TEXT.landingPlayButton;
+  document.getElementById('pathEyebrow').textContent       = UI_TEXT.pathEyebrow;
+  document.getElementById('pathHeading').innerHTML         = UI_TEXT.pathHeading;
+  document.getElementById('pathSub').textContent           = UI_TEXT.pathSubtitle;
+  document.getElementById('gameWordmark').textContent      = UI_TEXT.gameWordmark;
+  document.getElementById('gameYearLabel').textContent     = UI_TEXT.gameYearLabel;
+  document.getElementById('endEarlyBtn').innerHTML         = UI_TEXT.endEarlyButton;
+  document.getElementById('overlayTag').textContent        = UI_TEXT.overlayTag;
+  document.getElementById('olContinueBtn').textContent     = UI_TEXT.overlayContinueBtn;
+  document.getElementById('endEyebrow').textContent        = UI_TEXT.endEyebrow;
+  document.getElementById('endTitle').textContent          = UI_TEXT.endTitle;
+  document.getElementById('verdictEyebrow').textContent    = UI_TEXT.verdictEyebrow;
+  document.getElementById('playAgainBtn').innerHTML        = UI_TEXT.playAgainButton;
+}
+
+function buildPathCards() {
+  const grid = document.getElementById('pathsGrid');
+  const pathKeys = ['technology', 'environment', 'government'];
+  grid.innerHTML = pathKeys.map(key => {
+    const p = ALL_STORY_PATHS[key];
+    return `
+      <div class="path-card ${key}" onclick="selectPath('${key}')">
+        <span class="path-icon">${p.PATH_CARD_ICON}</span>
+        <div class="path-name">${p.PATH_CARD_NAME}</div>
+        <div class="path-flavor">${p.PATH_CARD_FLAVOR}</div>
+        <div class="path-tag">${p.PATH_SUBTITLE}</div>
+      </div>`;
+  }).join('');
+}
+
+const INDICATOR_CONFIG = [
+  { internalKey: 'economy',     get displayLabel() { return UI_TEXT.statLabels.economy;     }, cssColor: 'var(--colour-economy)'     },
+  { internalKey: 'healthcare',  get displayLabel() { return UI_TEXT.statLabels.healthcare;  }, cssColor: 'var(--colour-healthcare)'  },
+  { internalKey: 'education',   get displayLabel() { return UI_TEXT.statLabels.education;   }, cssColor: 'var(--colour-education)'   },
+  { internalKey: 'social',      get displayLabel() { return UI_TEXT.statLabels.social;      }, cssColor: 'var(--colour-social)'      },
+  { internalKey: 'environment', get displayLabel() { return UI_TEXT.statLabels.environment; }, cssColor: 'var(--colour-environment)' },
+];
+
+// ── GAME STATE ───────────────────────────────────────────────────
+let gameState = {
+  currentStats:      { economy: 50, healthcare: 50, education: 50, social: 50, environment: 50 },
+  currentYear:       2030,
+  currentRound:      0,
+  chosenPath:        null,
+  lastOptionChosen:  -1,
+  pendingStatChanges: null,
+  pendingNextRound:   null,
+  pendingChoiceIndex: null,
+  // Undo history — each entry stores the complete state before a choice was made
+  history: [],
+};
+
+let gameChoices = [];
+
+// ── PAGE NAVIGATION ──────────────────────────────────────────────
+function showPage(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(pageId).classList.add('active');
+}
+
+function goToPathSelect() { showPage('pathselect'); }
+
+// ── PATH SELECTION ────────────────────────────────────────────────
+function selectPath(pathKey) {
+  gameState.chosenPath       = pathKey;
+  gameState.currentStats     = { economy: 50, healthcare: 50, education: 50, social: 50, environment: 50 };
+  gameState.currentYear      = 2030;
+  gameState.currentRound     = 0;
+  gameState.lastOptionChosen = -1;
+  gameState.history          = [];
+  gameChoices = [];
+  showPage('game');
+  setupGameHeader();
+  renderStatBars();
+  renderCurrentEvent();
+  updateUndoButton();
+}
+
+function resetAll() {
+  gameState = {
+    currentStats:      { economy: 50, healthcare: 50, education: 50, social: 50, environment: 50 },
+    currentYear:       2030,
+    currentRound:      0,
+    chosenPath:        null,
+    lastOptionChosen:  -1,
+    pendingStatChanges: null,
+    pendingNextRound:   null,
+    pendingChoiceIndex: null,
+    history:           [],
+  };
+  showPage('landing');
+}
+
+// ── UNDO ─────────────────────────────────────────────────────────
+function updateUndoButton() {
+  const btn = document.getElementById('undoBtn');
+  if (gameState.history.length > 0) {
+    btn.classList.add('visible');
+  } else {
+    btn.classList.remove('visible');
+  }
+}
+
+function undoLastChoice() {
+  if (gameState.history.length === 0) return;
+  // Close overlay if open
+  document.getElementById('impactOverlay').classList.remove('show');
+  // Restore the previous state snapshot
+  const prev = gameState.history.pop();
+  gameState.currentStats     = { ...prev.currentStats };
+  gameState.currentYear      = prev.currentYear;
+  gameState.currentRound     = prev.currentRound;
+  gameState.lastOptionChosen = prev.lastOptionChosen;
+  gameState.pendingStatChanges = null;
+  gameState.pendingNextRound   = null;
+  gameState.pendingChoiceIndex = null;
+  // Also undo the session choice record
+  gameChoices.pop();
+  renderStatBars();
+  renderCurrentEvent();
+  updateUndoButton();
+}
+
+// ── GAME HEADER ──────────────────────────────────────────────────
+function setupGameHeader() {
+  const pathData = ALL_STORY_PATHS[gameState.chosenPath];
+  const badgeEl  = document.getElementById('pathBadge');
+  badgeEl.textContent   = pathData.PATH_SUBTITLE;
+  badgeEl.style.color   = pathData.PATH_COLOUR;
+  badgeEl.style.opacity = '0.8';
+}
+
+function updateHeader() {
+  const yearEl = document.getElementById('yearVal');
+  yearEl.textContent = gameState.currentYear;
+  yearEl.classList.remove('year-pop');
+  void yearEl.offsetWidth;
+  yearEl.classList.add('year-pop');
+  document.getElementById('roundLbl').textContent =
+    UI_TEXT.roundFormat.replace('{round}', gameState.currentRound + 1).replace('{total}', TOTAL_ROUNDS);
+}
+
+// ── STAT BARS (SIDEBAR) ──────────────────────────────────────────
+function renderStatBars() {
+  const sidebarEl = document.getElementById('statsSide');
+  sidebarEl.innerHTML = `<div class="stats-label">${UI_TEXT.sidebarLabel}</div>`;
+  INDICATOR_CONFIG.forEach(indicator => {
+    const currentValue = clampValue(gameState.currentStats[indicator.internalKey]);
+    sidebarEl.innerHTML += `
+      <div class="stat-block">
+        <div class="stat-row">
+          <span class="stat-name-txt ${indicator.internalKey}">${indicator.displayLabel}</span>
+          <span class="stat-num ${indicator.internalKey}" id="snum-${indicator.internalKey}">${Math.round(currentValue)}</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill ${indicator.internalKey}" id="bfill-${indicator.internalKey}" style="width:${currentValue}%"></div>
+          <div class="bar-midline"></div>
+        </div>
+      </div>`;
+  });
+}
+
+function animateStatBars(statChanges) {
+  INDICATOR_CONFIG.forEach(indicator => {
+    const change = statChanges[indicator.internalKey] || 0;
+    if (!change) return;
+    const newValue = clampValue(gameState.currentStats[indicator.internalKey] + change);
+    gameState.currentStats[indicator.internalKey] = newValue;
+    setTimeout(() => {
+      const barFill  = document.getElementById(`bfill-${indicator.internalKey}`);
+      const numLabel = document.getElementById(`snum-${indicator.internalKey}`);
+      if (barFill)  barFill.style.width  = newValue + '%';
+      if (numLabel) numLabel.textContent = Math.round(newValue);
+    }, 150);
+  });
+}
+
+function clampValue(value) { return Math.max(0, Math.min(100, value)); }
+
+// ── EVENT DISPLAY ────────────────────────────────────────────────
+function renderCurrentEvent() {
+  updateHeader();
+  const pathData     = ALL_STORY_PATHS[gameState.chosenPath];
+  const currentEvent = pathData.EVENTS[gameState.currentRound];
+  publishGameState();
+
+  let openingDescription;
+  if (gameState.currentRound === 0) {
+    openingDescription = currentEvent.DEFAULT_INTRO;
+  } else {
+    const previousEvent = pathData.EVENTS[gameState.currentRound - 1];
+    const chosenOption  = previousEvent.OPTIONS[gameState.lastOptionChosen];
+    openingDescription  = chosenOption.CONSEQUENCE_INTRO || currentEvent.DEFAULT_INTRO;
+  }
+
+  const mainPanel = document.getElementById('scenarioMain');
+  const eventTag = UI_TEXT.eventTagFormat
+    .replace('{round}', gameState.currentRound + 1)
+    .replace('{total}', TOTAL_ROUNDS)
+    .replace('{path}', pathData.PATH_TITLE);
+
+  mainPanel.innerHTML = `
+    <div class="event-tag">${eventTag}</div>
+    <div class="event-title">${currentEvent.EVENT_TITLE}</div>
+    <div class="event-desc">${openingDescription}</div>
+    <div class="choose-lbl">${UI_TEXT.chooseLabel}</div>
+    <div class="options-row" id="optionsRow">
+      ${currentEvent.OPTIONS.map((option, index) => buildOptionCard(option, index)).join('')}
+    </div>
+  `;
+
+  // Start listener AFTER DOM is built so tally elements exist when first update fires
+  startVoteListener();
+}
+
+function buildOptionCard(option, optionIndex) {
+  const effectEntries = Object.entries(option.STAT_EFFECTS);
+  const risingStats   = effectEntries.filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]);
+  const fallingStats  = effectEntries.filter(([, v]) => v < 0).sort((a, b) => a[1] - b[1]);
+  const topRising     = risingStats[0]  || null;
+  const topFalling    = fallingStats[0] || null;
+  const risingLabel   = topRising  ? getIndicatorLabel(topRising[0])  : null;
+  const fallingLabel  = topFalling ? getIndicatorLabel(topFalling[0]) : null;
+  const revealedKeys  = new Set([topRising?.[0], topFalling?.[0]].filter(Boolean));
+  const unknownIndicators = INDICATOR_CONFIG.filter(ind => !revealedKeys.has(ind.internalKey));
+
+  const unknownPillsHtml = unknownIndicators.map(ind =>
+    `<span class="hint-unknown" style="border-color:${ind.cssColor}22; color:${ind.cssColor}99;">? ${ind.displayLabel}</span>`
+  ).join('');
+
+  const impactForecastHtml = `
+    <div class="opt-hint-wrap">
+      <div class="opt-hint-known">
+        ${risingLabel  ? `<span class="hint-up">↑ ${risingLabel}</span>`   : ''}
+        ${fallingLabel ? `<span class="hint-down">↓ ${fallingLabel}</span>` : ''}
+      </div>
+      <div class="opt-hint-unknown">${unknownPillsHtml}</div>
+      <span class="hint-label">${UI_TEXT.impactForecastLabel}</span>
+    </div>`;
+
+  const optionLetter = UI_TEXT.optionLetterFormat.replace('{letter}', String.fromCharCode(65 + optionIndex));
+  return `
+    <div class="opt-card" onclick="chooseOption(${optionIndex})">
+      <div class="opt-letter">${optionLetter}</div>
+      <div class="opt-title">${option.OPTION_NAME}</div>
+      <div class="opt-desc">${option.OPTION_DESCRIPTION}</div>
+      ${impactForecastHtml}
+      <div class="vote-tally" id="vote-tally-${optionIndex}">
+        <div class="vote-bar-track"><div class="vote-bar-fill" style="width:0%"></div></div>
+        <span class="vote-count">0 votes</span>
+      </div>
+    </div>`;
+}
+
+function getIndicatorLabel(internalKey) {
+  const match = INDICATOR_CONFIG.find(ind => ind.internalKey === internalKey);
+  return match ? match.displayLabel : internalKey;
+}
+
+function chooseOption(optionIndex) {
+  document.querySelectorAll('.opt-card').forEach(card => card.classList.add('disabled'));
+  const currentEvent = ALL_STORY_PATHS[gameState.chosenPath].EVENTS[gameState.currentRound];
+  const chosenOption = currentEvent.OPTIONS[optionIndex];
+
+  // Save state snapshot for undo BEFORE applying any changes
+  gameState.history.push({
+    currentStats:      { ...gameState.currentStats },
+    currentYear:       gameState.currentYear,
+    currentRound:      gameState.currentRound,
+    lastOptionChosen:  gameState.lastOptionChosen,
+  });
+
+  gameState.pendingStatChanges  = chosenOption.STAT_EFFECTS;
+  gameState.pendingNextRound    = gameState.currentRound + 1;
+  gameState.pendingChoiceIndex  = optionIndex;
+  recordChoice(optionIndex);
+  updateUndoButton();
+  showImpactOverlay(chosenOption.OPTION_NAME, chosenOption.NARRATIVE_TITLE, chosenOption.NARRATIVE, chosenOption.STAT_EFFECTS);
+}
+
+// ── IMPACT OVERLAY ───────────────────────────────────────────────
+function showImpactOverlay(chosenOptionLabel, narrativeTitle, narrativeText, statEffects) {
+  document.getElementById('olTitle').textContent   = narrativeTitle || chosenOptionLabel;
+  document.getElementById('olNarrative').textContent = narrativeText || '';
+
+  const allChanges = Object.entries(statEffects);
+  const rising     = allChanges.filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]);
+  const falling    = allChanges.filter(([, v]) => v < 0).sort((a, b) => a[1] - b[1]);
+  const topRising  = rising[0]  || null;
+  const topFalling = falling[0] || null;
+  const knownStats = [topRising, topFalling].filter(Boolean);
+  const knownKeys  = new Set(knownStats.map(([k]) => k));
+  const unknownStats = allChanges.filter(([k]) => !knownKeys.has(k));
+
+  const impactRowEl = document.getElementById('olImpactRow');
+  impactRowEl.innerHTML = '';
+
+  function buildStatRow(statKey, statValue, isUnknown) {
+    const isRising  = statValue > 0;
+    const isZero    = statValue === 0;
+    const indicator = INDICATOR_CONFIG.find(ind => ind.internalKey === statKey);
+    let arrowHtml;
+    if (isZero) {
+      arrowHtml = `<span class="impact-arrow neutral">${UI_TEXT.overlayNoChange}</span>`;
+    } else {
+      arrowHtml = `<span class="impact-arrow ${isRising ? 'up' : 'down'}">${isRising ? UI_TEXT.overlayIncreasing : UI_TEXT.overlayDecreasing}</span>`;
+    }
+    const unknownTag = isUnknown ? `<span class="impact-unknown-tag">${UI_TEXT.hiddenEffectTag}</span>` : '';
+    impactRowEl.innerHTML += `
+      <div class="impact-item ${isUnknown ? 'impact-unknown' : ''}" id="imp-${statKey}">
+        <div class="impact-header">
+          <span class="impact-name" style="color:${indicator.cssColor}">${indicator.displayLabel} ${unknownTag}</span>
+          ${arrowHtml}
+        </div>
+        ${!isZero ? `
+        <div class="impact-bar-track">
+          <div class="impact-bar-fill ${isRising ? 'up' : 'down'}" id="impfill-${statKey}" style="width:0%"></div>
+        </div>` : ''}
+      </div>`;
+  }
+
+  knownStats.forEach(([key, val]) => buildStatRow(key, val, false));
+  unknownStats.forEach(([key, val]) => buildStatRow(key, val, true));
+
+  const continueBtn = document.getElementById('olContinueBtn');
+  continueBtn.classList.remove('show');
+  document.getElementById('impactOverlay').classList.add('show');
+
+  knownStats.forEach(([statKey, statVal], i) => {
+    setTimeout(() => {
+      const rowEl = document.getElementById(`imp-${statKey}`);
+      if (rowEl) rowEl.classList.add('show');
+      setTimeout(() => {
+        const fillEl = document.getElementById(`impfill-${statKey}`);
+        if (fillEl) fillEl.style.width = Math.min(100, Math.abs(statVal) / 25 * 100) + '%';
+      }, 200);
+    }, i * 240 + 80);
+  });
+
+  const unknownStartDelay = knownStats.length * 240 + 280;
+  setTimeout(() => {
+    const divider = document.createElement('div');
+    divider.className = 'impact-divider';
+    divider.textContent = UI_TEXT.otherEffectsLabel;
+    const firstUnknownEl = document.getElementById(`imp-${unknownStats[0]?.[0]}`);
+    if (firstUnknownEl) impactRowEl.insertBefore(divider, firstUnknownEl);
+  }, unknownStartDelay - 60);
+
+  unknownStats.forEach(([statKey, statVal], i) => {
+    setTimeout(() => {
+      const rowEl = document.getElementById(`imp-${statKey}`);
+      if (rowEl) rowEl.classList.add('show');
+      setTimeout(() => {
+        const fillEl = document.getElementById(`impfill-${statKey}`);
+        if (fillEl) fillEl.style.width = Math.min(100, Math.abs(statVal) / 25 * 100) + '%';
+      }, 200);
+    }, unknownStartDelay + i * 200);
+  });
+
+  const totalDelay = unknownStartDelay + unknownStats.length * 200 + 400;
+  setTimeout(() => continueBtn.classList.add('show'), totalDelay);
+}
+
+function continueFromOverlay() {
+  document.getElementById('impactOverlay').classList.remove('show');
+  animateStatBars(gameState.pendingStatChanges);
+  gameState.lastOptionChosen = gameState.pendingChoiceIndex;
+  gameState.currentRound     = gameState.pendingNextRound;
+  gameState.currentYear     += 10;
+  setTimeout(() => {
+    if (gameState.currentRound >= TOTAL_ROUNDS) {
+      endGame(false);
+    } else {
+      renderCurrentEvent();
+    }
+  }, 600);
+}
+
+// ── END GAME / RESULTS SCREEN ────────────────────────────────────
+function endGame(endedEarly = false) {
+  stopVoteListener();
+  publishGameEnded();
+  showPage('endpage');
+  document.getElementById('endYear').textContent = UI_TEXT.endLocationYear
+    .replace('{location}', UI_TEXT.endLocation)
+    .replace('{year}', gameState.currentYear);
+
+  const barsContainer = document.getElementById('endBars');
+  barsContainer.innerHTML = '';
+  INDICATOR_CONFIG.forEach(indicator => {
+    const finalValue = clampValue(gameState.currentStats[indicator.internalKey]);
+    barsContainer.innerHTML += `
+      <div class="end-stat-row">
+        <div class="end-stat-name" style="color:${indicator.cssColor}">${indicator.displayLabel}</div>
+        <div class="end-track">
+          <div class="end-fill" id="ef-${indicator.internalKey}" style="width:0%; background:${indicator.cssColor}; opacity:0.75;"></div>
+          <div class="end-midline"></div>
+        </div>
+        <div class="end-val" style="color:${indicator.cssColor}">${Math.round(finalValue)}</div>
+      </div>`;
+  });
+
+  setTimeout(() => {
+    INDICATOR_CONFIG.forEach(indicator => {
+      const barEl = document.getElementById(`ef-${indicator.internalKey}`);
+      if (barEl) barEl.style.width = clampValue(gameState.currentStats[indicator.internalKey]) + '%';
+    });
+  }, 120);
+
+  const verdictTitle = buildVerdictText();
+  pushGameStatsToFirebase(endedEarly, endedEarly ? null : verdictTitle);
+}
+
+function buildVerdictText() {
+  const s              = gameState.currentStats;
+  const economy        = s.economy;
+  const environment    = s.environment;
+  const social         = s.social;
+  const healthcare     = s.healthcare;
+  const education      = s.education;
+  const allValues      = [economy, environment, social, healthcare, education];
+  const overallAverage = allValues.reduce((sum, v) => sum + v, 0) / allValues.length;
+
+  let verdict;
+  if      (economy > 65 && environment < 40)        verdict = UI_TEXT.verdicts.gildedWasteland;
+  else if (environment > 65 && economy < 40)        verdict = UI_TEXT.verdicts.beautifulStruggle;
+  else if (social > 65 && healthcare < 40)          verdict = UI_TEXT.verdicts.fracturedCommons;
+  else if (education > 65 && social < 40)           verdict = UI_TEXT.verdicts.educatedDivide;
+  else if (overallAverage < 38)                     verdict = UI_TEXT.verdicts.weightOfConsequence;
+  else if (overallAverage > 68)                     verdict = UI_TEXT.verdicts.stateTransformed;
+  else if (environment < 42 && overallAverage > 54) verdict = UI_TEXT.verdicts.prosperityAtAPrice;
+  else if (social > 60 && economy < 45)             verdict = UI_TEXT.verdicts.richInEverything;
+  else                                              verdict = UI_TEXT.verdicts.longMiddleGround;
+
+  document.getElementById('verdictHead').textContent  = verdict.title;
+  document.getElementById('verdictStory').textContent = verdict.narrative;
+  return verdict.title;
+}
+
+// ── FIREBASE ANALYTICS ───────────────────────────────────────────
+const FIREBASE_DB_URL = 'https://emeregencey-game-default-rtdb.firebaseio.com/';
+
+// ── LIVE GAME STATE (VOTING) ─────────────────────────────────────
+let voteListener = null; // holds the EventSource for SSE
+
+function publishGameState() {
+  if (!sessionPassword) return;
+  const pathData     = ALL_STORY_PATHS[gameState.chosenPath];
+  const currentEvent = pathData.EVENTS[gameState.currentRound];
+  const options = currentEvent.OPTIONS.map((o, i) => ({
+    index: i,
+    name:  o.OPTION_NAME,
+    description: o.OPTION_DESCRIPTION,
+  }));
+  const record = {
+    active:     true,
+    round:      gameState.currentRound,
+    year:       gameState.currentYear,
+    path:       gameState.chosenPath,
+    eventTitle: currentEvent.EVENT_TITLE,
+    eventDesc:  currentEvent.DEFAULT_INTRO,
+    options,
+    updatedAt:  Date.now(),
+  };
+  fetch(FIREBASE_DB_URL + `live_game/${encodeURIComponent(sessionPassword)}.json`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(record),
+  }).catch(err => console.warn('Firebase live state write failed:', err));
+}
+
+function publishGameEnded() {
+  if (!sessionPassword) return;
+  fetch(FIREBASE_DB_URL + `live_game/${encodeURIComponent(sessionPassword)}.json`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ active: false, updatedAt: Date.now() }),
+  }).catch(() => {});
+}
+
+let _voteFetchPending = false;
+
+function startVoteListener() {
+  stopVoteListener();
+  if (!sessionPassword) return;
+
+  // Fetch immediately so existing votes appear right away
+  fetchAndDisplayVotes();
+
+  // SSE for real-time updates
+  const url = FIREBASE_DB_URL + `votes/${encodeURIComponent(sessionPassword)}.json`;
+  voteListener = new EventSource(url);
+
+  voteListener.addEventListener('put', e => {
+    try {
+      const parsed = JSON.parse(e.data);
+      // Only use snapshot directly when it's the full root ("/")
+      // Sub-path puts (e.g. "/voterXYZ") contain a single voter object,
+      // not the full collection — using that directly breaks the tally
+      if (parsed.path === '/') {
+        updateVoteTallies(parsed.data || {});
+      } else {
+        // Partial update — re-fetch the full set
+        fetchAndDisplayVotes();
+      }
+    } catch(_) {}
+  });
+
+  voteListener.addEventListener('patch', e => {
+    // 'patch' is a partial update — re-fetch the full set, but debounce so
+    // rapid patches don't stack up into multiple simultaneous requests
+    fetchAndDisplayVotes();
+  });
+
+  voteListener.onerror = () => {};
+  // No polling interval — it races with SSE and causes the flicker
+}
+
+function stopVoteListener() {
+  if (voteListener) {
+    voteListener.close();
+    voteListener = null;
+  }
+  _voteFetchPending = false;
+}
+
+function fetchAndDisplayVotes() {
+  if (!sessionPassword) return;
+  // Skip if a fetch is already in-flight to prevent race conditions
+  if (_voteFetchPending) return;
+  _voteFetchPending = true;
+  fetch(FIREBASE_DB_URL + `votes/${encodeURIComponent(sessionPassword)}.json`)
+    .then(r => {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .then(data => {
+      _voteFetchPending = false;
+      updateVoteTallies(data || {});
+    })
+    .catch(err => {
+      _voteFetchPending = false;
+      console.warn('Vote fetch failed:', err);
+    });
+}
+
+function updateVoteTallies(allVotes) {
+  const round = gameState.currentRound;
+  const counts = {};
+  if (allVotes && typeof allVotes === 'object') {
+    Object.values(allVotes).forEach(entry => {
+      if (entry && typeof entry === 'object' && entry.round === round && typeof entry.vote === 'number') {
+        counts[entry.vote] = (counts[entry.vote] || 0) + 1;
+      }
+    });
+  }
+  const total = Object.values(counts).reduce((s, v) => s + v, 0);
+  const pathData = ALL_STORY_PATHS[gameState.chosenPath];
+  if (!pathData) return;
+  const currentEvent = pathData.EVENTS[round];
+  if (!currentEvent) return;
+  currentEvent.OPTIONS.forEach((_, i) => {
+    const tallyEl = document.getElementById(`vote-tally-${i}`);
+    if (!tallyEl) return;
+    const count = counts[i] || 0;
+    const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+    // Update sub-elements in-place — avoids tearing the DOM and flashing to 0
+    const barFill = tallyEl.querySelector('.vote-bar-fill');
+    const countEl = tallyEl.querySelector('.vote-count');
+    if (barFill) barFill.style.width = pct + '%';
+    if (countEl) countEl.textContent = count + ' vote' + (count !== 1 ? 's' : '');
+  });
+}
+
+function recordChoice(optionIndex) {
+  const pathData     = ALL_STORY_PATHS[gameState.chosenPath];
+  const currentEvent = pathData.EVENTS[gameState.currentRound];
+  const chosenOption = currentEvent.OPTIONS[optionIndex];
+  gameChoices.push({
+    round:       gameState.currentRound + 1,
+    eventTitle:  currentEvent.EVENT_TITLE,
+    optionIndex: optionIndex,
+    optionName:  chosenOption.OPTION_NAME,
+  });
+}
+
+function pushGameStatsToFirebase(endedEarly, verdictTitle) {
+  const gameId = Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  const now = new Date();
+  const pad = n => String(n).padStart(2, '0');
+  const dateStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+  const timeStr = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+  const record = {
+    gameId, timestamp: now.toISOString(), date: dateStr, time: timeStr,
+    dayOfWeek: ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][now.getDay()],
+    sessionPassword: sessionPassword || '',
+    path: gameState.chosenPath,
+    completedRounds: gameState.currentRound,
+    endedEarly, verdictTitle: verdictTitle || null,
+    choices: gameChoices,
+    finalStats: { ...gameState.currentStats },
+  };
+  fetch(FIREBASE_DB_URL + 'game_stats.json', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(record),
+  }).catch(err => console.warn('Firebase write failed:', err));
+}
+
+// ── STARTUP ──────────────────────────────────────────────────────
+applyUIText();
+buildPathCards();
+// Show password gate first, not landing
+document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+</script>
+</body>
+</html>
